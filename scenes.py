@@ -134,7 +134,7 @@ class Quote(Scene):
         radial_bg(ctx, (0.09, 0.07, 0.08), (0.01, 0.01, 0.015))
         q = self.p.get("q", ""); who = self.p.get("who", "")
         size = 92 if len(q) < 30 else 76
-        lines = wrap(ctx, q, 1500, "Bebas Neue", size)
+        lines = wrap(ctx, q, 1250, "Bebas Neue", size)
         a = ease(t / 0.8)
         sc = 1.0 + 0.04 * u
         ctx.save(); ctx.translate(W / 2, H / 2 - 40); ctx.scale(sc, sc)

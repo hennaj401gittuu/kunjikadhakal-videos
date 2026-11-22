@@ -1,4 +1,5 @@
 import cairo, json, os, subprocess, sys, time, re
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from gfx import W, H
 exec(open("script.py").read())
 import scenes as sc
@@ -57,7 +58,7 @@ def render(i):
     ass = f"segs/{i:03d}.ass"; make_ass(i, ass)
     vf = (f"format=yuv420p,eq=contrast=1.06:saturation=0.88,colorbalance=rs=0.03:bs=0.04:rh=0.04:bh=-0.02,noise=alls=5:allf=t,vignette=PI/4.5,"
           f"fade=t=in:st=0:d=0.25,fade=t=out:st={max(0, D - 0.25):.3f}:d=0.25,"
-          f"ass={ass}:fontsdir=/home/claude/mw/fonts")
+          f"ass={ass}:fontsdir={os.path.expanduser('~/.fonts')}")
     tmp = f"segs/{i:03d}.tmp.mp4"
     cmd = ["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "bgra", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-",
            "-vf", vf, "-c:v", "libx264", "-preset", "veryfast", "-crf", "23", "-maxrate", "4M", "-bufsize", "8M",

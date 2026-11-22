@@ -1,7 +1,10 @@
 import soundfile as sf, numpy as np, re, json, subprocess, os, sys
 from kokoro_onnx import Kokoro
 exec(open("script.py").read())
-k=Kokoro("models/kokoro-v1.0.onnx","models/voices-v1.0.bin")
+import os
+MD=os.environ.get("MW_MODELS", os.path.expanduser("~/mwmodels"))
+k=Kokoro(f"{MD}/kokoro-v1.0.onnx",f"{MD}/voices-v1.0.bin")
+os.makedirs("vo",exist_ok=True)
 SR=24000; P=0.93
 def lower(a):
     # pitch down via resample trick with ffmpeg

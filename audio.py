@@ -1,4 +1,5 @@
-import numpy as np, soundfile as sf, json, subprocess
+import numpy as np, soundfile as sf, json, subprocess, sys, os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from scipy.signal import resample_poly, lfilter, butter
 exec(open("script.py").read())
 from render_seg import seg_dur, LEAD

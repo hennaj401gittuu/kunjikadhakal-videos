@@ -1,4 +1,5 @@
-import cairo, math, random, json, os
+import cairo, math, random, json, os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from gfx import *
 TX = json.load(open("thumb.json")) if os.path.exists("thumb.json") else {"l1": "CAUGHT", "l2": "42 YEARS", "l3": "LATER", "tag": "DNA MATCH"}
 TW, TH = 1280, 720

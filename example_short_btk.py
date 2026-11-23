@@ -1,4 +1,6 @@
 HOOK = ["HE ASKED POLICE ONE QUESTION", "THE ANSWER CAUGHT HIM"]
+# Cover image (cover.py): 2-3 huge lines (last line in the accent colour), kicker strip, evidence object, stamp, accent 0-5
+COVER = {"lines": ["CAUGHT BY A", "FLOPPY", "DISK"], "kicker": "BTK  \u2022  WICHITA 2005", "obj": "floppy", "tag": "SOLVED", "accent": 3}
 S = []
 def seg(scene, text, **p): S.append((scene, p, text.strip()))
 seg("quote", "For thirty years, a serial killer in Wichita, Kansas, taunted police with letters. Then he asked them one question.", q="“Can I communicate with floppy and not be traced?”", who="BTK, JANUARY 2005")

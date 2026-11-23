@@ -399,6 +399,8 @@ REG = {
 }
 
 def make(scene, p, D, idx, book_n=0):
+    import stickscene
+    if scene in stickscene.REG3: return stickscene.REG3[scene](p, D, idx)
     if scene == "quote" and not p.get("q"): return House2({"day": False}, D, idx)
     if scene == "book":
         cards = [["MICHELLE McNAMARA", "TRUE CRIME WRITER", "COINED: 'GOLDEN STATE KILLER'"], ["2016: McNAMARA DIES", "2018: HER BOOK IS PUBLISHED", "THE WORLD IS WATCHING"]][min(book_n, 1)]

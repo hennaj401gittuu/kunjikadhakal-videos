@@ -81,7 +81,17 @@ def main():
     obj = C.get("obj", "photo")
     c.save(); c.translate(CW / 2, oy); c.rotate(rnd.uniform(-0.18, 0.18)); c.scale(1.3, 1.3)
     c.push_group()
-    if not extra_obj(c, obj): s2.obj(c, obj if obj in OBJS else "photo", 1.0)
+    if obj == "figure":
+        from stick import figure
+        import stickscene as ss
+        fg = C.get("figure", {})
+        figure(c, 0, 210, 1.3, fg.get("pose", "shock"), fg.get("face", "shock"), hat=fg.get("hat"), outfit=ss.COLORS.get(fg.get("outfit", "navy")),
+               mustache=fg.get("mustache", False), glasses=fg.get("glasses", False), hair=fg.get("hair"), t=0.5, seed=4)
+    elif not extra_obj(c, obj):
+        import stickscene as ss
+        if obj in ("bottle", "moneybag", "cash", "trophy", "lightbulb", "box", "laptop", "tv", "document", "gear", "brick", "duck", "rocket", "ship", "crown", "warning"):
+            ss.prop(c, obj, 0, 110, 1.4, seed=3, t=0.5)
+        else: s2.obj(c, obj if obj in OBJS else "photo", 1.0)
     pat = c.pop_group()
     c.save(); c.translate(10, 14); c.set_source_rgba(0, 0, 0, 0.6); c.mask(pat); c.restore()
     c.set_source(pat); c.paint(); c.restore()

@@ -21,7 +21,10 @@ voice /= (np.abs(voice).max() + 1e-6); voice *= 0.89
 # ---- music: dark drone pads ----
 rng = np.random.default_rng(1)
 tt = np.arange(N) / SR
+MOOD = globals().get("MOOD", "dark")
 chords = [[55.0, 82.41, 130.81, 164.81], [43.65, 87.31, 130.81, 174.61], [36.71, 73.42, 110.0, 174.61], [41.2, 82.41, 123.47, 196.0]]
+if MOOD == "curious":
+    chords = [[65.41, 130.81, 164.81, 196.0], [55.0, 110.0, 130.81, 164.81], [43.65, 87.31, 130.81, 174.61], [49.0, 98.0, 123.47, 146.83]]
 music = np.zeros(N, np.float32)
 seglen = 16.0
 for k in range(int(T / seglen) + 2):
@@ -50,7 +53,18 @@ for s0 in np.arange(0, T, 1.6):
         if o + L >= N: break
         x = np.arange(L) / SR
         pulse[o:o + L] += amp * np.sin(2 * np.pi * 48 * x) * np.exp(-x * 18)
-music += 0.35 * pulse
+if MOOD == "curious":
+    # plucked arpeggio (music-box feel) on top of a soft pad, no heartbeat
+    pl = np.zeros(N, np.float32); step = 60 / 104 / 2
+    for k, s0 in enumerate(np.arange(0, T, step)):
+        ch = chords[int(s0 / seglen) % 4]; f = ch[1 + k % 3] * 2
+        o = int(s0 * SR); L = min(int(0.6 * SR), N - o)
+        if L <= 0: break
+        x = np.arange(L) / SR
+        pl[o:o + L] += (np.sin(2 * np.pi * f * x) + 0.3 * np.sin(4 * np.pi * f * x)) * np.exp(-x * 7)
+    music = 0.55 * music / (np.abs(music).max() + 1e-6) + 0.6 * pl / (np.abs(pl).max() + 1e-6)
+else:
+    music += 0.35 * pulse
 music /= np.abs(music).max() + 1e-6
 
 # ---- sfx ----

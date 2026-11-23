@@ -99,13 +99,23 @@ def main():
         o = int((starts[i] + LEAD) * SR); voice[o:o + len(a_)] += a_[:max(0, N - o)]
     voice /= np.abs(voice).max() + 1e-6
     tt = np.arange(N) / SR
-    mus = sum(np.sin(2 * np.pi * f * tt) for f in (55.0, 82.41, 110.0, 130.81)) * (0.6 + 0.4 * np.sin(2 * np.pi * 0.1 * tt))
+    MOOD = globals().get("MOOD", "dark")
+    base = (55.0, 82.41, 110.0, 130.81) if MOOD != "curious" else (65.41, 130.81, 164.81, 196.0)
+    mus = sum(np.sin(2 * np.pi * f * tt) for f in base) * (0.6 + 0.4 * np.sin(2 * np.pi * 0.1 * tt))
+    if MOOD == "curious":
+        pl = np.zeros(N, np.float32)
+        for k, s0 in enumerate(np.arange(0, T, 0.29)):
+            o = int(s0 * SR); L = min(int(0.5 * SR), N - o)
+            if L <= 0: break
+            x = np.arange(L) / SR; f = base[1 + k % 3] * 2
+            pl[o:o + L] += np.sin(2 * np.pi * f * x) * np.exp(-x * 8)
+        mus = mus / (np.abs(mus).max() + 1e-6) + 1.2 * pl
     pulse = np.zeros(N, np.float32)
     for s0 in np.arange(0, T, 0.9):
         o = int(s0 * SR); L = min(int(0.2 * SR), N - o)
         if L <= 0: break
         x = np.arange(L) / SR; pulse[o:o + L] += np.sin(2 * np.pi * 50 * x) * np.exp(-x * 20)
-    mus = mus / np.abs(mus).max() + 0.6 * pulse
+    if MOOD != "curious": mus = mus / np.abs(mus).max() + 0.6 * pulse
     mix = voice * 0.9 + 0.12 * mus / (np.abs(mus).max() + 1e-6)
     mix /= np.abs(mix).max() + 1e-6
     sf.write("short_a.wav", np.stack([mix, mix], 1).astype(np.float32), SR)

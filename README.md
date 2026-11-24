@@ -14,3 +14,9 @@ Engine for the Kunjikadhakal mystery/riddle Shorts and long videos.
 - Scenes: lineup (99% FAIL), place (crime location card), police, rule (1 TRUTH / 2 LIES), solo (suspect in spotlight + bubble), summary (+ typing ANSWER box + Follow).
 - Narrator: male, pitch 1.15, tempo 1.20 (matches the reference, ~155 Hz, fast, almost no pauses). All on-screen text English; narration Malayalam.
 - Extend with new scene functions for logic riddles (countdown clock, eye-line arrows) and door/choice riddles (timer bar, reveal).
+
+## long/ (16:9 whodunit marathon, added 24 Nov 2026)
+- `long/longvid.py`: 1920x1080 scenes (teaser, case title card, 3-suspect line-up with bubbles, rule pill, 5 s pause clock, per-suspect truth table test, reveal + "+1 POINT", score/subscribe end). Copy long/* to /home/claude/long/.
+- `long/cases.py`: case list (each verified with solve()); `fix.py` brute-forces unique statement sets.
+- `python3 run.py stills` -> contact stills; `run.py audio` -> long.wav + meta.json (chapters, answers); `run.py video 0 2` and `run.py video 1 2` render halves in parallel, then concat + mux.
+- wd.py `flat()` now has a 'tea' (Munnar tea estate) location.

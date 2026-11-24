@@ -289,6 +289,28 @@ def flat(ctx, t, s):
             if red:
                 rg = cairo.RadialGradient(bx+wx+45, by-115, 10, bx+wx+45, by-115, 260); rg.add_color_stop_rgba(0, 1, 0.1, 0.1, 0.45*a); rg.add_color_stop_rgba(1, 1, 0, 0, 0)
                 ctx.set_source(rg); ctx.paint()
+    if scene == 'tea':
+        # Munnar tea hills at night: layered hills with tea-row stripes and a bungalow with one red window
+        for k, (y0, col) in enumerate(((1000, '#0f2a24'), (1150, '#143a30'), (1320, '#1a4a3a'))):
+            ctx.move_to(0, y0+80)
+            for xx in range(0, W+60, 60): ctx.line_to(xx, y0 + 60*math.sin(xx/260 + k*1.7))
+            ctx.line_to(W, H); ctx.line_to(0, H); ctx.close_path(); ctx.set_source_rgba(*hexc(col)); ctx.fill()
+            ctx.set_source_rgba(0.5, 0.9, 0.6, 0.10); ctx.set_line_width(6)
+            for r in range(1, 8):
+                ctx.move_to(0, y0+r*34+80)
+                for xx in range(0, W+60, 60): ctx.line_to(xx, y0 + r*34 + 60*math.sin(xx/260 + k*1.7) + 10)
+                ctx.stroke()
+        bx, by = 300, 1060
+        ctx.rectangle(bx-130, by-110, 260, 120); fill_stroke(ctx, '#e8dcc0', 5)
+        ctx.move_to(bx-160, by-110); ctx.line_to(bx, by-200); ctx.line_to(bx+160, by-110); ctx.close_path(); fill_stroke(ctx, '#7a2e22', 5)
+        a = 0.75 + 0.25*math.sin(t*6)
+        for k, wx in enumerate((-90, 30)):
+            rrect(ctx, bx+wx, by-85, 60, 50, 6); ctx.set_source_rgba(*(hexc('#ff2a2a', a) if k == 1 else hexc('#ffb84a'))); ctx.fill()
+        rg = cairo.RadialGradient(bx+60, by-60, 10, bx+60, by-60, 260); rg.add_color_stop_rgba(0, 1, 0.1, 0.1, 0.4*a); rg.add_color_stop_rgba(1, 1, 0, 0, 0)
+        ctx.set_source(rg); ctx.paint()
+        for k in range(5):
+            mx = (k*260 + t*25) % (W+300) - 150
+            ctx.set_source_rgba(0.85, 0.9, 1, 0.07); ctx.save(); ctx.translate(mx, 960+k*40); ctx.scale(3, 0.5); ctx.arc(0, 0, 90, 0, 2*math.pi); ctx.restore(); ctx.fill()
     tape(ctx, 1640, -0.04, t)
 
 def lineup(ctx, t, s, sus, beat_t0):

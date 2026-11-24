@@ -20,3 +20,7 @@ Engine for the Kunjikadhakal mystery/riddle Shorts and long videos.
 - `long/cases.py`: case list (each verified with solve()); `fix.py` brute-forces unique statement sets.
 - `python3 run.py stills` -> contact stills; `run.py audio` -> long.wav + meta.json (chapters, answers); `run.py video 0 2` and `run.py video 1 2` render halves in parallel, then concat + mux.
 - wd.py `flat()` now has a 'tea' (Munnar tea estate) location.
+
+## Logic riddle + Which Door (added 24 Nov 2026)
+- `pz/riddle_bridge.py`: logic-riddle Short pattern (jail yard at sunset, striped prisoners with ball-and-chain, red LED countdown clock on a pole, paper signs, dashed orange arrows, thought bubbles, 5 s think clock, typing ANSWER + Follow). BFS check of the answer.
+- `long/doors.py` (+ doors_data.py, doors_beats.py, dthumb.py): 16:9 "Which Door?" marathon — corridor with circled-number doors, orange trench-coat detective host, ~30 hazard rooms (`hazard(kind)`), red timer bar, 5 s pause clock, wrong-door X, reveal walk-in, reason card + "+1 POINT". `python3 doors.py stills|audio|video 0 2`.

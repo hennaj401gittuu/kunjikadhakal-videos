@@ -199,6 +199,11 @@ def suspect(ctx, x, y, s, robe, t=0.0, pose='down', talk=0.0, cap=None, stache=T
         ctx.arc(0, hy-58, 11, 0, 2*math.pi); ctx.set_source_rgba(*hexc('#ffd23f')); ctx.fill()
     elif cap == 'kufi':
         ctx.move_to(-56, hy-30); ctx.curve_to(-50, hy-80, 50, hy-80, 56, hy-30); ctx.close_path(); fill_stroke(ctx, '#f2f2f2', 5)
+    elif cap == 'bun':
+        ctx.set_source_rgba(*hexc(hair)); ctx.arc(0, hy-70, 30, 0, 2*math.pi); ctx.fill()
+        for k in range(5): ctx.set_source_rgba(1, 1, 1, 1); ctx.arc(-28+k*14, hy-96+abs(k-2)*4, 6, 0, 2*math.pi); ctx.fill()
+        ctx.move_to(-66, hy+30); ctx.curve_to(-76, hy-80, 76, hy-80, 66, hy+30); ctx.curve_to(50, hy-30, -50, hy-30, -66, hy+30); ctx.close_path()
+        ctx.set_source_rgba(*hexc(hair)); ctx.fill_preserve(); ctx.set_source_rgba(*OUT); ctx.set_line_width(4); ctx.stroke()
     elif cap == 'bald':
         ctx.set_source_rgba(*hexc(hair)); ctx.arc(-50, hy-6, 16, 0, 2*math.pi); ctx.arc(50, hy-6, 16, 0, 2*math.pi); ctx.fill()
     else:
@@ -311,6 +316,44 @@ def flat(ctx, t, s):
         for k in range(5):
             mx = (k*260 + t*25) % (W+300) - 150
             ctx.set_source_rgba(0.85, 0.9, 1, 0.07); ctx.save(); ctx.translate(mx, 960+k*40); ctx.scale(3, 0.5); ctx.arc(0, 0, 90, 0, 2*math.pi); ctx.restore(); ctx.fill()
+    if scene == 'beach':
+        # Kovalam: sea, lighthouse with sweeping beam, palms, resort cottage with one red window
+        ctx.rectangle(0, 1150, W, 300); ctx.set_source_rgba(*hexc('#0c1a3e')); ctx.fill()
+        for k in range(10):
+            yy = 1170 + k*28; xx = (k*131 + t*40) % W
+            ctx.set_source_rgba(0.6, 0.75, 1, 0.20); ctx.rectangle(xx, yy, 160, 4); ctx.fill()
+        ctx.move_to(0, 1450); ctx.curve_to(300, 1400, 700, 1420, W, 1380); ctx.line_to(W, H); ctx.line_to(0, H); ctx.close_path()
+        ctx.set_source_rgba(*hexc('#3a3046')); ctx.fill()
+        # headland + lighthouse
+        ctx.move_to(620, 1160); ctx.curve_to(720, 1020, 900, 1000, W, 1010); ctx.line_to(W, 1160); ctx.close_path(); ctx.set_source_rgba(*hexc('#101a2c')); ctx.fill()
+        lx, ly = 700, 1040
+        ang = math.sin(t*1.2)*0.9
+        ctx.save(); ctx.translate(lx, ly-330); ctx.rotate(ang)
+        lg = cairo.LinearGradient(0, 0, -900, 0); lg.add_color_stop_rgba(0, 1, 0.95, 0.7, 0.45); lg.add_color_stop_rgba(1, 1, 0.95, 0.7, 0)
+        ctx.move_to(0, 0); ctx.line_to(-900, -110); ctx.line_to(-900, 110); ctx.close_path(); ctx.set_source(lg); ctx.fill(); ctx.restore()
+        for k in range(6):
+            y0 = ly - k*50; w0 = 60 - k*4
+            ctx.move_to(lx-w0, y0); ctx.line_to(lx+w0, y0); ctx.line_to(lx+w0-4, y0-50); ctx.line_to(lx-w0+4, y0-50); ctx.close_path()
+            fill_stroke(ctx, '#e8283c' if k % 2 else '#f4f1e8', 4)
+        rrect(ctx, lx-40, ly-350, 80, 50, 8); fill_stroke(ctx, '#ffe9a8', 4)
+        ctx.move_to(lx-48, ly-350); ctx.line_to(lx, ly-400); ctx.line_to(lx+48, ly-350); ctx.close_path(); fill_stroke(ctx, '#2a2a3a', 4)
+        # palms
+        ctx.set_source_rgba(*hexc('#060b16'))
+        for px, h0 in ((90, 560), (980, 480)):
+            ctx.move_to(px, 1470); ctx.curve_to(px+20, 1300, px+60, 1100, px+80, 1470-h0); ctx.set_line_width(16); ctx.stroke()
+            for kk in range(7):
+                a = -math.pi/2 + (kk-3)*0.55 + 0.05*math.sin(t*2+kk); ctx.move_to(px+80, 1470-h0)
+                ctx.curve_to(px+80+math.cos(a)*80, 1470-h0+math.sin(a)*80, px+80+math.cos(a)*150, 1470-h0+math.sin(a)*120+30, px+80+math.cos(a)*170, 1470-h0+math.sin(a)*110+80)
+                ctx.set_line_width(11); ctx.stroke()
+        # cottage
+        bx, by = 330, 1430
+        ctx.rectangle(bx-140, by-150, 280, 150); fill_stroke(ctx, '#d9c79c', 5)
+        ctx.move_to(bx-180, by-150); ctx.line_to(bx, by-260); ctx.line_to(bx+180, by-150); ctx.close_path(); fill_stroke(ctx, '#6b4a2a', 5)
+        a = 0.75 + 0.25*math.sin(t*6)
+        for k, wx in enumerate((-100, 30)):
+            rrect(ctx, bx+wx, by-120, 70, 60, 6); ctx.set_source_rgba(*(hexc('#ff2a2a', a) if k == 1 else hexc('#ffb84a'))); ctx.fill()
+        rg = cairo.RadialGradient(bx+65, by-90, 10, bx+65, by-90, 280); rg.add_color_stop_rgba(0, 1, 0.1, 0.1, 0.4*a); rg.add_color_stop_rgba(1, 1, 0, 0, 0)
+        ctx.set_source(rg); ctx.paint()
     tape(ctx, 1640, -0.04, t)
 
 def lineup(ctx, t, s, sus, beat_t0):

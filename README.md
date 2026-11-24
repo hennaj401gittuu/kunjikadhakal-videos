@@ -24,3 +24,8 @@ Engine for the Kunjikadhakal mystery/riddle Shorts and long videos.
 ## Logic riddle + Which Door (added 24 Nov 2026)
 - `pz/riddle_bridge.py`: logic-riddle Short pattern (jail yard at sunset, striped prisoners with ball-and-chain, red LED countdown clock on a pole, paper signs, dashed orange arrows, thought bubbles, 5 s think clock, typing ANSWER + Follow). BFS check of the answer.
 - `long/doors.py` (+ doors_data.py, doors_beats.py, dthumb.py): 16:9 "Which Door?" marathon — corridor with circled-number doors, orange trench-coat detective host, ~30 hazard rooms (`hazard(kind)`), red timer bar, 5 s pause clock, wrong-door X, reveal walk-in, reason card + "+1 POINT". `python3 doors.py stills|audio|video 0 2`.
+
+## Money brain-teaser marathon + Kovalam case (added 24 Nov 2026, run C)
+- `money/money.py` (+ stories.py, verify.py, thumb.py): 16:9 "Money Brain Teasers Marathon" in paper-cut style (peach sky, pale sun, paper clouds, teal hills, Kerala shop row with name boards, mundu/saree figures, ₹ notes passed hand to hand, price bubbles, paper signs, deep-blue caption band, 5→1 think clock, ruled answer card + red stamp, +1 POINT, halfway card, comment-box end + Subscribe). Copy money/* to /home/claude/money/. `python3 verify.py` checks every answer; `python3 money.py stills|audio|video 0 2`.
+- Narration numbers must be spelled in Malayalam words (the TTS has no digits).
+- wd.py: new `flat()` location 'beach' (Kovalam lighthouse + resort cottage) and suspect cap 'bun' (woman's hair bun with jasmine).

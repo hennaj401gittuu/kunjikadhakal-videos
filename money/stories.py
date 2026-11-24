@@ -39,7 +39,7 @@ S.append(dict(key='saree', title='The Saree Sale', shops=('SILK HOUSE', 'SAREE P
   wrong=dict(ml='രണ്ടും ഒന്നു തന്നെ എന്ന് തോന്നും, അല്ലേ?', en='Looks the *same*, right?'),
   q=dict(ml='ഏതു കടയിലാണ് വില കുറവ്? എത്ര രൂപ വ്യത്യാസം?', en='Which shop is *cheaper*, and by how much?', box='Shop 1 or 2? By ₹?'),
   ans=[dict(ml='ഒന്നാമത്തെ കട, ആയിരത്തിൽ നിന്ന് നാനൂറ് കുറച്ചാൽ അറുനൂറ്.', en='Shop 1: 1000 - 400 = *₹600*', line='Shop 1:  1000 - 400 = 600'),
-       dict(ml='രണ്ടാമത്തെ കട, ആദ്യം എണ്ണൂറ്. പിന്നെ എണ്ണൂറിന്റെ ഇരുപത് ശതമാനം, നൂറ്റി അറുപത് കുറഞ്ഞ് അറുനൂറ്റി നാല്പത്.', en='Shop 2: 1000 → 800 → 800 - 160 = *₹640*', line='Shop 2:  800 - 160 = 640'),
+       dict(ml='രണ്ടാമത്തെ കട, ആദ്യം എണ്ണൂറ്. പിന്നെ എണ്ണൂറിന്റെ ഇരുപത് ശതമാനം, നൂറ്റി അറുപത് കുറഞ്ഞ് അറുനൂറ്റി നാല്പത്.', en='Shop 2: 800, then 800 - 160 = *₹640*', line='Shop 2:  800 - 160 = 640'),
        dict(ml='അപ്പോൾ ഒന്നാമത്തെ കടയിൽ നാല്പത് രൂപ കുറവ്!', en='Shop 1 is cheaper by *₹40!*', line='Shop 1 saves ₹40')],
   stamp='SHOP 1, ₹40', short='Shop 1 (40% off) by ₹40: 600 vs 640'))
 
@@ -52,8 +52,8 @@ S.append(dict(key='soda', title='The Soda Offer', shops=('NASEER SODA', 'BEACH S
   ],
   wrong=dict(ml='മിക്കവരും പറയും പന്ത്രണ്ട് എന്ന്.', en='Most people say *12...*'),
   q=dict(ml='കടം വാങ്ങാതെ, അനുവിന് ആകെ എത്ര സോഡ കുടിക്കാം?', en='Without borrowing, how many sodas can Anu *drink* in total?', box='Total sodas = ?'),
-  ans=[dict(ml='ഒൻപതും കുടിച്ചു. ഒൻപത് കാലിക്കുപ്പിക്ക് മൂന്നു സോഡ ഫ്രീ.', en='Drink 9 → 9 empties → *3 free*', line='9 empties  → 3 free'),
-       dict(ml='ആ മൂന്നും കുടിച്ചു. മൂന്നു കാലിക്കുപ്പിക്ക് ഒന്നു കൂടി ഫ്രീ.', en='Drink 3 → 3 empties → *1 more*', line='3 empties  → 1 free'),
+  ans=[dict(ml='ഒൻപതും കുടിച്ചു. ഒൻപത് കാലിക്കുപ്പിക്ക് മൂന്നു സോഡ ഫ്രീ.', en='Drink 9: 9 empties = *3 free*', line='9 empties  =  3 free'),
+       dict(ml='ആ മൂന്നും കുടിച്ചു. മൂന്നു കാലിക്കുപ്പിക്ക് ഒന്നു കൂടി ഫ്രീ.', en='Drink 3: 3 empties = *1 more*', line='3 empties  =  1 free'),
        dict(ml='ഒൻപതും മൂന്നും ഒന്നും. ആകെ പതിമൂന്ന് സോഡ!', en='9 + 3 + 1 = *13* sodas!', line='9 + 3 + 1 = 13')],
   stamp='13 SODAS', short='13 sodas (9 + 3 + 1)'))
 
@@ -77,7 +77,7 @@ S.append(dict(key='chips', title='The Chips Machines', shops=('SHIBU CHIPS', 'FA
   chars=[('Shibu', '#e67e22', '#f4f1e8', False)], item='chips',
   setup=[
     dict(ml='ഷിബുവിന്റെ ഏത്തക്ക ചിപ്സ് ഫാക്ടറി.', en='Shibu\'s *banana chips* factory.', item_at=0),
-    dict(ml='അഞ്ചു മെഷീനുകൾ, അഞ്ചു മിനിറ്റിൽ, അഞ്ചു പാക്കറ്റ് ഉണ്ടാക്കുന്നു.', en='*5* machines make *5* packets in *5* minutes.', sign='5 MACHINES · 5 PACKETS · 5 MIN'),
+    dict(ml='അഞ്ചു മെഷീനുകൾ, അഞ്ചു മിനിറ്റിൽ, അഞ്ചു പാക്കറ്റ് ഉണ്ടാക്കുന്നു.', en='*5* machines make *5* packets in *5* minutes.', sign='5 MACHINES, 5 PACKETS, 5 MIN'),
     dict(ml='ഷിബു നൂറു മെഷീനുകൾ വാങ്ങി.', en='Shibu buys *100* machines.', bub=(0, '100 MACHINES')),
   ],
   wrong=dict(ml='മിക്കവരും പറയും നൂറു മിനിറ്റ് എന്ന്.', en='Most people say *100 minutes...*'),
@@ -106,7 +106,7 @@ S.append(dict(key='exam', title='The Exam Day', shops=('SCHOOL', 'BOOK STALL', '
   ],
   wrong=None,
   q=dict(ml='പരീക്ഷ ഏതു ദിവസമാണ്?', en='On which *day* is the exam?', box='Which day?'),
-  ans=[dict(ml='ഓരോ ഏഴു ദിവസത്തിലും അതേ ദിവസം വരും. പതിനാല് ആഴ്ച, തൊണ്ണൂറ്റെട്ട് ദിവസം, വീണ്ടും ചൊവ്വാഴ്ച.', en='14 weeks = *98 days* → Tuesday again.', line='14 x 7 = 98 days: Tuesday'),
+  ans=[dict(ml='ഓരോ ഏഴു ദിവസത്തിലും അതേ ദിവസം വരും. പതിനാല് ആഴ്ച, തൊണ്ണൂറ്റെട്ട് ദിവസം, വീണ്ടും ചൊവ്വാഴ്ച.', en='14 weeks = *98 days:* Tuesday again.', line='14 x 7 = 98 days: Tuesday'),
        dict(ml='ബാക്കി രണ്ടു ദിവസം. ബുധൻ, വ്യാഴം. ഉത്തരം വ്യാഴാഴ്ച!', en='2 more days: Wed, *Thursday!*', line='+2 days = Thursday')],
   stamp='THURSDAY', short='Thursday'))
 

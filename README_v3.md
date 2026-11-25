@@ -60,3 +60,22 @@ thumb.json: {"l1": red hook, "l2", "l3", "tag", "face", "pose", "outfit", "hat",
 ## 6. Titles
 - Long: "The ENTIRE History of <X> in <N> Minutes" or "How <X> went from <A> to <B>" / "The <Person> Who <twist>" (<= 100 chars). Description: 2-line hook, chapters, "Illustrated retelling based on historical sources.", "Subscribe to Midnight Witness for more untold stories.", 3 hashtags (#history #<subject> #documentary). 12-15 tags.
 - Shorts: curiosity question/statement + 1 emoji + " #Shorts".
+
+## 7. Packaging & hooks (research-based, Nov 2026)
+Why: first-3-second retention correlates strongly with overall performance; curiosity-gap hooks are the most reliable; most Reels/Shorts are watched on mute; thumbnails that break out use faces/expressions, overlay text and high contrast, with text limited to ~3 words.
+### Shorts / Reels
+- The FIRST SPOKEN SENTENCE = the HOOK text on screen, under 12 words, no greeting, no context first. Use one of: curiosity gap ("This mistake made one man a billionaire."), bold claim ("Coca-Cola was sold as medicine."), mid-action cold open ("The ship was found drifting. Nobody was on board."), the burning question ("What REALLY happened to Princess Diana?").
+- The opening scene must be the most striking picture of the Short (it appears fully formed in frame 1 with a punch-in + impact sound; make it count).
+- 35-50 seconds (90-125 words), a new picture every ~3 s (6-10 segments, short sentences).
+- Validate the hook within 5 s, then one turn/twist in the middle, the payoff in the last 10 s.
+- END WITH A LOOP: the last line should flow back into the first line (e.g. last line "...and that's why nobody ever found" -> loops to first line "the man who vanished with $200,000"). Do NOT end with a spoken "follow" line; the follow CTA goes in the caption only.
+- Caption first line repeats the hook; ask a specific question to drive comments ("Accident or cover-up? Comment below.").
+### Long-video thumbnails (thumb_stick.py)
+- MAX 4 words of text total, ideally 2-3 (l1 red + l2 white, l3 rarely). The text must ADD to the title, not repeat it (title "What REALLY Happened to Princess Diana?" -> thumbnail "NOT AN / ACCIDENT?").
+- One huge expressive character (shock for big reveals, "think" unease for mysteries, grin for success stories) + ONE key object. Nothing else.
+- High contrast: bright yellow/orange/teal backgrounds for success/brand stories; dark navy with "question": true (huge red "?") for mysteries.
+- Must read at phone size: look at a 320x180 copy before posting.
+### Long videos
+- No intro, no greeting: the first sentence is the hook and the first 5 seconds must confirm the title/thumbnail promise. Plant a second, smaller hook around 30 s ("But the strangest part came 40 years later.").
+### Short covers (cover.py)
+- lines: 2-3 words that tease, never give away the answer; kicker names the subject; keep everything in the middle of the frame.

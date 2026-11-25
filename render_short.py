@@ -49,7 +49,7 @@ def main():
     T = sum(durs)
     make_ass("short.ass", starts)
     vf = (f"format=yuv420p,eq=contrast=1.06:saturation=0.9,noise=alls=4:allf=t,vignette=PI/5,"
-          f"fade=t=in:st=0:d=0.15,ass=short.ass:fontsdir={FONTS}")
+          f"ass=short.ass:fontsdir={FONTS}")
     cmd = ["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "bgra", "-s", f"{VW}x{VH}", "-r", str(FPS), "-i", "-",
            "-vf", vf, "-c:v", "libx264", "-preset", "veryfast", "-crf", "22", "-maxrate", "6M", "-bufsize", "12M", "-pix_fmt", "yuv420p", "short_v.mp4"]
     pr = subprocess.Popen(cmd, stdin=subprocess.PIPE)
@@ -61,7 +61,7 @@ def main():
         D = durs[i]; obj = s2.make(scn, p, D, i, 0)
         for f in range(int(round(D * FPS))):
             tt = f / FPS; gt = starts[i] + tt
-            sc.save(); sc.set_source_rgb(0, 0, 0); sc.paint(); obj.frame(sc, tt); sc.restore(); scene.flush()
+            sc.save(); sc.set_source_rgb(0, 0, 0); sc.paint(); obj.frame(sc, tt + (0.9 if i == 0 else 0)); sc.restore(); scene.flush()
             # blurred cover background
             smc.save(); smc.scale(120 / W, 68 / H); smc.set_source_surface(scene, 0, 0); smc.paint(); smc.restore(); small.flush()
             oc.save(); s = VH / 68 * 1.05; oc.translate(VW / 2, VH / 2); oc.scale(s, s); oc.translate(-60, -34)
@@ -70,10 +70,14 @@ def main():
             # main 16:9 panel, slightly cropped sides for size
             pw = 1400; ph = pw * 9 / 16; py = 545
             oc.save(); oc.rectangle(0, py, VW, ph); oc.clip()
-            oc.translate(VW / 2 - pw / 2, py); oc.scale(pw / W, ph / H); oc.set_source_surface(scene, 0, 0); oc.paint(); oc.restore()
+            pz = 1.0 + 0.22 * (1 - ease(gt / 0.45)) if gt < 0.45 else 1.0
+            oc.translate(VW / 2, py + ph / 2); oc.scale(pz, pz); oc.translate(-pw / 2, -ph / 2)
+            oc.scale(pw / W, ph / H); oc.set_source_surface(scene, 0, 0); oc.paint(); oc.restore()
+            if gt < 0.12:
+                oc.set_source_rgba(1, 1, 1, 0.55 * (1 - gt / 0.12)); oc.paint()
             oc.set_source_rgba(*RED, 1); oc.rectangle(0, py - 6, VW, 6); oc.fill(); oc.rectangle(0, py + ph, VW, 6); oc.fill()
             # hook title (stays whole video, pops in first 0.4 s)
-            a = ease(gt / 0.3) if gt < 0.3 else 1.0
+            a = 1.0
             sz = [118, 104]
             for k, ln in enumerate(hook[:2]):
                 font(oc, "Bebas Neue", sz[k]); tw = oc.text_extents(ln).x_advance
@@ -116,7 +120,9 @@ def main():
         if L <= 0: break
         x = np.arange(L) / SR; pulse[o:o + L] += np.sin(2 * np.pi * 50 * x) * np.exp(-x * 20)
     if MOOD != "curious": mus = mus / np.abs(mus).max() + 0.6 * pulse
-    mix = voice * 0.9 + 0.12 * mus / (np.abs(mus).max() + 1e-6)
+    hit = np.zeros(N, np.float32); L = min(int(0.9 * SR), N); x = np.arange(L) / SR
+    hit[:L] = (np.sin(2 * np.pi * (60 * np.exp(-x * 2) + 35) * x) * np.exp(-x * 4) + 0.3 * np.random.default_rng(1).standard_normal(L) * np.exp(-x * 18)).astype(np.float32)
+    mix = voice * 0.9 + 0.12 * mus / (np.abs(mus).max() + 1e-6) + 0.35 * hit
     mix /= np.abs(mix).max() + 1e-6
     sf.write("short_a.wav", np.stack([mix, mix], 1).astype(np.float32), SR)
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", "short_v.mp4", "-i", "short_a.wav", "-map", "0:v", "-map", "1:a", "-c:v", "copy",

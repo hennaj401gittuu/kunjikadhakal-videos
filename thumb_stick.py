@@ -30,6 +30,9 @@ def big(txt, x, y, size, col, maxw=560):
     c.set_source_rgb(0, 0, 0); c.set_line_width(size * 0.14); c.set_line_join(cairo.LINE_JOIN_ROUND); c.stroke_preserve()
     c.set_source_rgb(*col); c.fill()
 lines = [J.get("l1", ""), J.get("l2", ""), J.get("l3", "")]
+if J.get("question"):  # huge "?" behind the text for mystery thumbnails
+    c.select_font_face("Bebas Neue"); c.set_font_size(620); c.move_to(1010, 640); c.text_path("?")
+    c.set_source_rgba(0.9, 0.1, 0.12, 0.85); c.fill()
 lines = [l for l in lines if l]
 y = 200 if len(lines) == 3 else 250
 for i, ln in enumerate(lines):

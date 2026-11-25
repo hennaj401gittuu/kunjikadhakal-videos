@@ -1,7 +1,7 @@
-# Tiny Meadow Tales house style: "cozy craft" (from 25 Nov 2026)
+# Tiny Meadow Tales house VISUAL style: "cozy craft" (from 25 Nov 2026)
 
-The owner loved "Mama Ant's Cookie Day" (Short, 25 Nov 2026) and chose it as the channel's
-visual and story style from now on. Reference video: `Mama_Ant_Cookie_Day.mp4` on branch
+The owner loved "Mama Ant's Cookie Day" (Short, 25 Nov 2026) and chose its VISUALS ONLY as the
+channel's look from now on. Stories, voices, music and structure stay as the task prompt says. Reference video: `Mama_Ant_Cookie_Day.mp4` on branch
 `tmt-20261125-ant-cookies`. Reference code in this branch:
 
 - `draw.py`: helpers (ease/seg/lerp, ell, rr, radial/linear gradients, text with outline in Fredoka/Pacifico,
@@ -40,15 +40,7 @@ Do NOT reuse the ant mother/babies as the main characters of a new story (new ch
 - Camera: slow push-ins (3-6% per shot), close medium shot for the "making" steps
   (character behind a counter, props in front), wider shots for arrivals and the ending.
 
-## The stories
-Cozy "making something" stories of a little animal family:
-1. a small, funny, slightly sneaky start (tiptoeing past a sleeping giant pet to fetch an ingredient,
-   a freeze moment when it stirs),
-2. coming home to excited babies,
-3. a satisfying step-by-step making montage (baking, cooking, building, sewing, gardening, painting,
-   wrapping presents, making a snowman...), one clear step per shot,
-4. the reveal (oven DING, finished thing) and
-5. sharing it with family or friends, with happy munching or playing, hearts and "Yummy!"/"Hooray!".
-Keep the lesson gentle (sharing, love, patience, helping, trying, saying thank you).
-For the 16:9 long videos, re-lay out the same sets for 1920x1080 (counter across the bottom
-third, window left, shelves right) and keep the same look.
+## Laying out new stories in this look
+Use whatever settings the story needs (pond, forest, snowy den, beach, garden...), but paint them in
+this warm golden palette with the same soft gradients, cozy details, warm_glow and vignette.
+For the 16:9 long videos, lay sets out for 1920x1080 and keep the same look.

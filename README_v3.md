@@ -11,6 +11,11 @@ Pick stories a curious viewer cannot stop watching. A good subject has ALL of:
 Avoid: politics/elections, religion, ongoing wars, living private people, tragedies told for laughs, anything mainly about children being harmed.
 Vary subjects day to day (brand, then person, then invention, then historical event...). Never repeat a subject (see the never-repeat list in memory).
 
+### 1b. Mysteries & conspiracy theories (about 2 days a week, and often as Shorts)
+Famous mysteries and conspiracy theories get huge curiosity (e.g. "Was Princess Diana's crash really an accident?", the Mary Celeste, the Dyatlov Pass incident, D.B. Cooper, "Paul is dead", the Moon-landing hoax claims). Structure them as an investigation:
+1. Hook with the question ("Was it really an accident?"), 2. what actually happened (sourced facts), 3. the theories, each clearly ATTRIBUTED ("some claimed...", "Mohamed Al-Fayed alleged..."), 4. what the evidence and official investigations found (inquests, inquiries, scientists), 5. the verdict, keeping genuine unknowns honest ("to this day nobody knows who D.B. Cooper was").
+Rules: never present a debunked theory as true; never say a real person or organisation committed a crime unless a court found it; say "theory", "claim", "alleged". Prefer old, well-documented cases. AVOID: health/vaccine/medical conspiracies, election or political-fraud claims, anything blaming an ethnic or religious group, recent mass-casualty tragedies (under ~20 years) and cases where living private people are accused. Title style: "What REALLY Happened to <X>?" / "<Mystery>: The Theory vs The Truth". MOOD "dark" suits these.
+
 ## 2. Narration that hooks
 - **First 10 seconds**: the most surprising fact or moment, as a cold open. E.g. "In 1886, a wounded war veteran addicted to morphine invented a 'medicine'. Today, people drink it 2 billion times a day." Then: "This is the ENTIRE story of ..." 
 - **Open loops**: tease what is coming ("But that was nothing compared to what happened in 1985.") at least once per chapter.

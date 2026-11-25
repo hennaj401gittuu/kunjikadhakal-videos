@@ -32,3 +32,6 @@ Engine for the Kunjikadhakal mystery/riddle Shorts and long videos.
 
 ## Money-story Short (9:16, added 25 Nov 2026, Kandupidi run B)
 - `money/money_short.py` (+ `ledger_thief.py`): 1080x1920 paper-cut money Short (two-shop street, Pappan/thief-in-cap/Leela, night scene, pen-mark note close-up, rice sack, flying notes, STOLEN NOTE stamp, 5→1 clock, comment box ANSWER, +Follow→Following). Deep storyteller voice ('male', 0.88, 1.27) ≈ 123 Hz median; plucked-string bed + coin/register sfx. Copy to /home/claude/money/ next to money.py; `python3 money_short.py stills|render`. For a new story, replace BEATS (pos/pay/pay2/bub/rice/sign/stampit keys).
+
+## Story-riddle Short (9:16, added 25 Nov 2026, Kandupidi run C)
+- `money/riddle_short.py`: lateral-thinking story riddle in flat vector style (sunset road with palms + bokeh, Thrissur bank interior + loan form with typed fields, value chips, sunburst shock zoom with sweat drop, red no-sign over LYING/FORGOT, count-up bubbles, night scene with glowing ?, 5→1 clock, brain mascot + comment box ANSWER + Follow→Following). Captions lower-middle (y 1200) with dark outline. Reuses money.py person/bubble/clock5 and money_short.py bulb/comment_box/follow_btn/build_mix. Storyteller voice ('male', 0.88, 1.27) ≈ 125 Hz. Copy next to money.py; `python3 riddle_short.py stills|render`. Replace BEATS for a new riddle.

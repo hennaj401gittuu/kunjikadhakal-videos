@@ -354,6 +354,40 @@ def flat(ctx, t, s):
             rrect(ctx, bx+wx, by-120, 70, 60, 6); ctx.set_source_rgba(*(hexc('#ff2a2a', a) if k == 1 else hexc('#ffb84a'))); ctx.fill()
         rg = cairo.RadialGradient(bx+65, by-90, 10, bx+65, by-90, 280); rg.add_color_stop_rgba(0, 1, 0.1, 0.1, 0.4*a); rg.add_color_stop_rgba(1, 1, 0, 0, 0)
         ctx.set_source(rg); ctx.paint()
+    if scene == 'train':
+        # night train on a river bridge (Bharathapuzha), coaches with lit windows, one red window
+        ctx.set_source_rgba(*hexc('#08101e'))
+        ctx.move_to(0, 1080)
+        for xx in range(0, W+60, 60): ctx.line_to(xx, 1060 + 40*math.sin(xx/180))
+        ctx.line_to(W, 1200); ctx.line_to(0, 1200); ctx.close_path(); ctx.fill()
+        ctx.rectangle(0, 1200, W, H); ctx.set_source_rgba(*hexc('#0d1838')); ctx.fill()
+        for k in range(14):
+            yy = 1330 + k*30; xx = (k*97 + t*25) % W
+            ctx.set_source_rgba(0.6, 0.7, 1, 0.16); ctx.rectangle(xx, yy, 140, 4); ctx.fill()
+        # bridge deck + truss + pillars
+        ctx.set_source_rgba(*hexc('#2a2f40')); ctx.rectangle(0, 1250, W, 26); ctx.fill()
+        for px in range(60, W, 240):
+            ctx.rectangle(px, 1276, 50, 300); ctx.set_source_rgba(*hexc('#1d2232')); ctx.fill()
+        ctx.set_source_rgba(*hexc('#3a4058')); ctx.set_line_width(6)
+        for k in range(0, W+120, 120):
+            ctx.move_to(k, 1250); ctx.line_to(k+60, 1070); ctx.line_to(k+120, 1250); ctx.stroke()
+        ctx.move_to(0, 1070); ctx.line_to(W, 1070); ctx.stroke()
+        # coaches sliding slowly
+        off = -(t*60) % 520
+        for c in range(-1, 4):
+            cx = off + c*520 - 260
+            rrect(ctx, cx, 1100, 500, 145, 16); fill_stroke(ctx, '#7a2228', 5)
+            ctx.set_source_rgba(*hexc('#d8c070')); ctx.rectangle(cx, 1200, 500, 10); ctx.fill()
+            for wi in range(5):
+                red = (c == 1 and wi == 2)
+                a = 0.75 + 0.25*math.sin(t*6) if red else 1.0
+                rrect(ctx, cx+30+wi*92, 1125, 64, 55, 6)
+                ctx.set_source_rgba(*(hexc('#ff2a2a', a) if red else hexc('#ffc65a'))); ctx.fill()
+                if red:
+                    rg = cairo.RadialGradient(cx+62+wi*92, 1150, 10, cx+62+wi*92, 1150, 280); rg.add_color_stop_rgba(0, 1, 0.1, 0.1, 0.45*a); rg.add_color_stop_rgba(1, 1, 0, 0, 0)
+                    ctx.set_source(rg); ctx.paint()
+            for wx in (90, 410):
+                ctx.set_source_rgba(0.05, 0.05, 0.08, 1); ctx.arc(cx+wx, 1250, 22, 0, 2*math.pi); ctx.fill()
     tape(ctx, 1640, -0.04, t)
 
 def lineup(ctx, t, s, sus, beat_t0):
@@ -430,7 +464,7 @@ def summary(ctx, t, s, sus, beat_t0, typing=None, follow=False):
         ctx.save(); ctx.translate(W/2, 1550); ctx.scale(p, p)
         rrect(ctx, -170, -50, 340, 100, 50); ctx.set_source_rgba(*hexc('#2d6bff')); ctx.fill()
         text(ctx, '+ Follow', 0, 16, 46, '#ffffff'); ctx.restore()
-        text(ctx, '@kunjikadhakal', W/2, 1660, 30, '#9aa3bd')
+        text(ctx, '@Kandupidii', W/2, 1660, 30, '#9aa3bd')
 
 # ------------------------------------------------------------------ build
 def build(case, out_dir, name, stills=False):

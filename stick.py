@@ -52,7 +52,7 @@ POSES = {
     # (left arm angle, right arm angle, left elbow bend, right elbow bend) in degrees, 0 = down
     "stand": (15, -15, 0, 0), "point": (15, -110, 0, 0), "wave": (15, -150, 0, -40), "cheer": (150, -150, 10, -10),
     "think": (15, -140, 0, -120), "shrug": (70, -70, 60, -60), "hold": (40, -40, 50, -50), "sad": (8, -8, 0, 0),
-    "shock": (130, -130, 30, -30), "walk": (35, -35, 0, 0), "present": (15, -80, 0, -20),
+    "shock": (130, -130, 30, -30), "walk": (35, -35, 0, 0), "present": (15, -80, 0, -20), "cross": (0, 0, 0, 0),
 }
 
 def figure(c, x, y, s=1.0, pose="stand", face="smile", hat=None, outfit=None, mustache=False, glasses=False, hair=None,
@@ -84,7 +84,14 @@ def figure(c, x, y, s=1.0, pose="stand", face="smile", hat=None, outfit=None, mu
     if walk: la += sw; ra += sw
     sh = (0, -205 + bob)
     hands = []
-    for side, ang, bend in ((-1, la, lb), (1, ra, rb)):
+    if pose == "cross":
+        for side in (-1, 1):
+            pts = [(side * 8, sh[1]), (side * 46, sh[1] + 48), (-side * 34, sh[1] + 62 + (6 if side > 0 else 0))]
+            sline(c, pts, lw + 2, INK, seed + 6 + side)
+            hx, hy = pts[-1]
+            c.set_source_rgb(*SKIN); c.arc(hx, hy, 9, 0, 7); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(4); c.stroke()
+            hands.append((hx, hy))
+    for side, ang, bend in (() if pose == "cross" else ((-1, la, lb), (1, ra, rb))):
         a1 = math.radians(ang); L = 62
         ex, ey = sh[0] + side * 8 + math.sin(a1) * L * (-1 if side < 0 else 1) * -1, sh[1] + math.cos(a1) * L
         # simpler: angle measured from down, positive = outward

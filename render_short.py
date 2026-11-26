@@ -2,9 +2,11 @@
 Run inside a working folder containing script.py (with S list and HOOK = ["LINE 1", "LINE 2"]) and vo/ from tts_all.py.
 Usage: python3 ENGINE/render_short.py  -> writes short.mp4 (video+audio)"""
 import cairo, json, os, subprocess, sys, math
+import numpy as _np
 ENG = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, ENG)
 from gfx import W, H, RED, PAPER, text, ease, font
-import scenes2 as s2
+import scenes2 as s2, stickscene as ss3
+ss3.XSQ = 0.5
 exec(open("script.py").read())
 VW, VH, FPS, LEAD = 1080, 1920, 30, 0.25
 FONTS = os.path.expanduser("~/.fonts")
@@ -25,7 +27,7 @@ WrapStyle: 0
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Sub,Poppins Bold,68,&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,0,0,0,0,100,100,0,0,1,5,2,2,80,80,425,1
+Style: Sub,Poppins Bold,68,&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,0,0,0,0,100,100,0,0,1,6,2,2,70,70,330,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -54,7 +56,6 @@ def main():
            "-vf", vf, "-c:v", "libx264", "-preset", "veryfast", "-crf", "22", "-maxrate", "6M", "-bufsize", "12M", "-pix_fmt", "yuv420p", "short_v.mp4"]
     pr = subprocess.Popen(cmd, stdin=subprocess.PIPE)
     scene = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H); sc = cairo.Context(scene)
-    small = cairo.ImageSurface(cairo.FORMAT_ARGB32, 120, 68); smc = cairo.Context(small)
     out = cairo.ImageSurface(cairo.FORMAT_ARGB32, VW, VH); oc = cairo.Context(out)
     hook = HOOK
     for i, (scn, p, t) in enumerate(S):
@@ -62,20 +63,33 @@ def main():
         for f in range(int(round(D * FPS))):
             tt = f / FPS; gt = starts[i] + tt
             sc.save(); sc.set_source_rgb(0, 0, 0); sc.paint(); obj.frame(sc, tt + (0.9 if i == 0 else 0)); sc.restore(); scene.flush()
-            # blurred cover background
-            smc.save(); smc.scale(120 / W, 68 / H); smc.set_source_surface(scene, 0, 0); smc.paint(); smc.restore(); small.flush()
-            oc.save(); s = VH / 68 * 1.05; oc.translate(VW / 2, VH / 2); oc.scale(s, s); oc.translate(-60, -34)
-            oc.set_source_surface(small, 0, 0); oc.get_source().set_filter(cairo.FILTER_BILINEAR); oc.paint(); oc.restore()
-            oc.set_source_rgba(0, 0, 0, 0.62); oc.paint()
-            # main 16:9 panel, slightly cropped sides for size
-            pw = 1400; ph = pw * 9 / 16; py = 545
-            oc.save(); oc.rectangle(0, py, VW, ph); oc.clip()
+            # FULL-BLEED vertical: scene fills the frame, its top/bottom edges are extended (sky above, ground below)
+            full = scn == "stick"
+            k = 1.12 if full else 0.74          # stick scenes zoom in (characters are squeezed to the centre); text scenes fit wider
+            cy = 1010 if full else 1000          # vertical centre of the scene in the frame
             pz = 1.0 + 0.22 * (1 - ease(gt / 0.45)) if gt < 0.45 else 1.0
-            oc.translate(VW / 2, py + ph / 2); oc.scale(pz, pz); oc.translate(-pw / 2, -ph / 2)
-            oc.scale(pw / W, ph / H); oc.set_source_surface(scene, 0, 0); oc.paint(); oc.restore()
+            oc.save(); oc.translate(VW / 2, cy); oc.scale(k * pz, k * pz); oc.translate(-W / 2, -H / 2)
+            oc.set_source_surface(scene, 0, 0); pat = oc.get_source(); pat.set_extend(cairo.EXTEND_PAD); pat.set_filter(cairo.FILTER_GOOD)
+            oc.paint(); oc.restore()
+            # replace the stretched edges with one clean averaged colour, blended into the scene
+            buf = _np.frombuffer(scene.get_data(), _np.uint8).reshape(H, scene.get_stride() // 4, 4)[:, :W, :3]
+            for edge in ("top", "bot"):
+                rows = buf[:12] if edge == "top" else buf[-12:]
+                bgr = rows.reshape(-1, 3).mean(0) / 255.0; col = (bgr[2] * 0.85, bgr[1] * 0.85, bgr[0] * 0.85)
+                ys = cy + (-H / 2 if edge == "top" else H / 2) * k * pz
+                if edge == "top":
+                    g = cairo.LinearGradient(0, ys, 0, ys + 90); g.add_color_stop_rgba(0, *col, 1); g.add_color_stop_rgba(1, *col, 0)
+                    oc.set_source_rgb(*col); oc.rectangle(0, 0, VW, ys); oc.fill(); oc.set_source(g); oc.rectangle(0, ys, VW, 90); oc.fill()
+                else:
+                    g = cairo.LinearGradient(0, ys - 90, 0, ys); g.add_color_stop_rgba(0, *col, 0); g.add_color_stop_rgba(1, *col, 1)
+                    oc.set_source_rgb(*col); oc.rectangle(0, ys, VW, VH - ys); oc.fill(); oc.set_source(g); oc.rectangle(0, ys - 90, VW, 90); oc.fill()
+            # soft shade behind the hook (top) and the subtitles (bottom) so text always reads
+            g = cairo.LinearGradient(0, 0, 0, 560); g.add_color_stop_rgba(0, 0, 0, 0, 0.55); g.add_color_stop_rgba(1, 0, 0, 0, 0)
+            oc.set_source(g); oc.rectangle(0, 0, VW, 560); oc.fill()
+            g = cairo.LinearGradient(0, 1300, 0, VH); g.add_color_stop_rgba(0, 0, 0, 0, 0); g.add_color_stop_rgba(1, 0, 0, 0, 0.55)
+            oc.set_source(g); oc.rectangle(0, 1300, VW, VH - 1300); oc.fill()
             if gt < 0.12:
                 oc.set_source_rgba(1, 1, 1, 0.55 * (1 - gt / 0.12)); oc.paint()
-            oc.set_source_rgba(*RED, 1); oc.rectangle(0, py - 6, VW, 6); oc.fill(); oc.rectangle(0, py + ph, VW, 6); oc.fill()
             # hook title (stays whole video, pops in first 0.4 s)
             a = 1.0
             sz = [118, 104]
@@ -83,13 +97,13 @@ def main():
                 font(oc, "Bebas Neue", sz[k]); tw = oc.text_extents(ln).x_advance
                 fs = sz[k] if tw < VW - 120 else sz[k] * (VW - 120) / tw
                 font(oc, "Bebas Neue", fs); tw = oc.text_extents(ln).x_advance
-                y = 290 + k * 118
+                y = 210 + k * 118
                 oc.move_to(VW / 2 - tw / 2, y); oc.text_path(ln)
                 oc.set_source_rgba(0, 0, 0, a); oc.set_line_width(12); oc.stroke_preserve()
                 oc.set_source_rgba(*((0.97, 0.2, 0.22) if k == 0 else (1, 1, 1)), a); oc.fill()
-            text(oc, "MIDNIGHT WITNESS", VW / 2, 490, "Inter", 30, (0.85, 0.85, 0.88), 0.8, "c", bold=True, spacing=10)
+            text(oc, "MIDNIGHT WITNESS", VW / 2, 410, "Inter", 30, (0.85, 0.85, 0.88), 0.8, "c", bold=True, spacing=10)
             # progress bar
-            oc.set_source_rgba(1, 1, 1, 0.9); oc.rectangle(0, py + ph, VW * gt / T, 6); oc.fill()
+            oc.set_source_rgba(0.97, 0.2, 0.22, 0.95); oc.rectangle(0, VH - 10, VW * gt / T, 10); oc.fill()
             out.flush(); pr.stdin.write(out.get_data())
     pr.stdin.close(); assert pr.wait() == 0
     # audio: narration + light score

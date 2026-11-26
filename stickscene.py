@@ -177,7 +177,7 @@ class Stick(v1.Scene):
         ctx.save(); ctx.translate(W / 2 + self.dir * 25 * u, H / 2); ctx.scale(z, z); ctx.translate(-W / 2, -H / 2)
         ctx.set_source_surface(self.bg, 0, 0); ctx.paint()
         for pr in p.get("props", []):
-            kind = pr[0]; x = pr[1] * W if len(pr) > 1 else W * 0.7; y = pr[2] if len(pr) > 2 else 800; s = pr[3] if len(pr) > 3 else 1.0
+            kind = pr[0]; x = _sx(pr[1]) * W if len(pr) > 1 else W * _sx(0.7); y = pr[2] if len(pr) > 2 else 800; s = pr[3] if len(pr) > 3 else 1.0
             txt = pr[4] if len(pr) > 4 else None
             a = ease((t - 0.2) / 0.4)
             ctx.push_group(); prop(ctx, kind, x, y + 30 * (1 - a), s, seed=self.idx, t=t, txt=txt); ctx.pop_group_to_source(); ctx.paint_with_alpha(a)
@@ -185,7 +185,7 @@ class Stick(v1.Scene):
             crowd(ctx, 80, W - 80, 1060, 2, seed=self.idx, t=t, cheer=p.get("crowd") == "cheer", scale=0.7)
         chars = p.get("chars", [])
         for i, ch in enumerate(chars):
-            x = ch.get("x", (i + 1) / (len(chars) + 1)) * W
+            x = _sx(ch.get("x", (i + 1) / (len(chars) + 1))) * W
             a = ease((t - 0.1 - i * 0.25) / 0.35)
             yy = ch.get("y", 900 if p.get("bg") not in ("stage",) else 760)
             ctx.push_group()
@@ -322,4 +322,6 @@ class Versus(v1.Scene):
         s = 1 + 0.15 * math.sin(t * 4)
         ctx.save(); ctx.translate(W / 2, H / 2); ctx.scale(s, s); scircle(ctx, 0, 0, 110, (1, 0.85, 0.1), seed=2); label(ctx, self.p.get("mid", "VS"), 0, 0, 110); ctx.restore()
 
+XSQ = 1.0   # Shorts: squeeze character/prop x positions toward the centre (render_short sets 0.5)
+def _sx(x): return 0.5 + (x - 0.5) * XSQ
 REG3 = {"stick": Stick, "words": Words, "portrait": Portrait, "bigdate": BigDate, "versus": Versus}

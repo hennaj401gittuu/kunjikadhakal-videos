@@ -19,7 +19,7 @@ for k in range(24):  # sunburst
 hatch(c, 0, 0, TW, TH, (0, 0, 0), 0.05)
 glow(c, 380, 420, 380, (1, 1, 1), 0.35)
 # big character, waist-up feel (huge scale, cropped by frame bottom)
-figure(c, 360, 1060, 3.1, J.get("pose", "shock"), J.get("face", "shock"), hat=J.get("hat"), outfit=ss.COLORS.get(J.get("outfit", "navy")),
+figure(c, 360, 1060, 3.1, J.get("pose", "shock"), J.get("face", "shock"), look=J.get("look"), hat=J.get("hat"), outfit=ss.COLORS.get(J.get("outfit", "navy")),
        mustache=J.get("mustache", False), glasses=J.get("glasses", False), hair=J.get("hair"), t=0.5, seed=3)
 if J.get("prop"):
     ss.prop(c, J["prop"], 650, 640, 1.5, seed=2, t=0.5)
@@ -62,7 +62,7 @@ if J.get("style") == "history":
     c2.save(); c2.scale(TW / W0 * 1.05, TH / H0 * 1.05); c2.translate(-40, -20); c2.set_source_surface(bgs, 0, 0); c2.paint(); c2.restore()
     # character on its own layer -> white sticker outline
     fig = _c.ImageSurface(_c.FORMAT_ARGB32, TW, TH); fc = _c.Context(fig)
-    figure(fc, 250, 900, 2.35, J.get("pose", "stand"), J.get("face", "smirk"), hat=J.get("hat"), outfit=_ss.COLORS.get(J.get("outfit", "black")),
+    figure(fc, 250, 900, 2.35, J.get("pose", "stand"), J.get("face", "smirk"), look=J.get("look"), hat=J.get("hat"), outfit=_ss.COLORS.get(J.get("outfit", "black")),
            mustache=J.get("mustache", False), glasses=J.get("glasses", False), hair=J.get("hair"), beard=J.get("beard", False), t=0.5, seed=7,
            apron=J.get("apron", False))
     for k in range(24):

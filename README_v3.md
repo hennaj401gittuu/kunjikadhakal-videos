@@ -81,3 +81,9 @@ Why: first-3-second retention correlates strongly with overall performance; curi
 - No intro, no greeting: the first sentence is the hook and the first 5 seconds must confirm the title/thumbnail promise. Plant a second, smaller hook around 30 s ("But the strangest part came 40 years later.").
 ### Short covers (cover.py)
 - lines: 2-3 words that tease, never give away the answer; kicker names the subject; keep everything in the middle of the frame.
+
+
+## 8. Famous people: drawn caricatures (never photos)
+Any figure (stick scene chars, portrait, versus, thumb.json, cover figure) accepts "look": "<name>" from stick.LOOKS, which gives the person's signature look (hair, outfit, accessories) and overrides hair/outfit/hat. ALWAYS add the name tag the first time they appear. Available: diana, diana_royal, charles, charles_old, king, queen, queen_young, philip, camilla, william, harry, einstein, napoleon, lincoln, tycoon.
+For other famous people, build a look inline: "look": {"hair": "<style>_<colour>", "outfit": [r,g,b], "hat": ..., "mustache"/"beard"/"glasses": true, "extras": [...]}. Hair styles: feather, side, receding, curls, bob, wild, slick, ginger, long (colours: blonde, brown, dark, grey, white, red, silver); also "long_blonde"/"long_dark"/"long_red" (shoulder length). Extras: dress, coat, tie, sash, medals, tiara, pearls, earrings, handbag, big_ears. Hats: top, bowler, cap, hard, crown, royal_hat, bicorne.
+Rules: never use real photos or paste real faces; draw people respectfully, never show them doing something they did not do. Royal and celebrity stories (e.g. "The Dark Truth Behind <famous relationship/event>") performed best on the owner's earlier channel, so use these looks for them.

@@ -190,7 +190,7 @@ class Stick(v1.Scene):
             yy = ch.get("y", 900 if p.get("bg") not in ("stage",) else 760)
             ctx.push_group()
             hands = figure(ctx, x, yy + 20 * (1 - a), ch.get("s", 1.5), ch.get("pose", "stand"), ch.get("face", "smile"), hat=ch.get("hat"),
-                           outfit=COLORS.get(ch.get("outfit")), mustache=ch.get("mustache", False), glasses=ch.get("glasses", False),
+                           look=ch.get("look"), outfit=COLORS.get(ch.get("outfit")), mustache=ch.get("mustache", False), glasses=ch.get("glasses", False),
                            hair=ch.get("hair"), facing=ch.get("facing", 1), t=t, seed=self.idx * 10 + i, apron=ch.get("apron", False), beard=ch.get("beard", False))
             if ch.get("prop"):
                 hx, hy = hands[1]
@@ -273,7 +273,7 @@ class Portrait(v1.Scene):
         ctx.set_source(g); ctx.rectangle(-260, -340, 520, 600); ctx.fill()
         ctx.save(); ctx.rectangle(-260, -340, 520, 600); ctx.clip()
         ch = self.p.get("char", {})
-        figure(ctx, 0, 520, 2.6, ch.get("pose", "stand"), ch.get("face", "smile"), hat=ch.get("hat"), outfit=COLORS.get(ch.get("outfit", "navy")),
+        figure(ctx, 0, 520, 2.6, ch.get("pose", "stand"), ch.get("face", "smile"), look=ch.get("look"), hat=ch.get("hat"), outfit=COLORS.get(ch.get("outfit", "navy")),
                mustache=ch.get("mustache", False), glasses=ch.get("glasses", False), hair=ch.get("hair"), beard=ch.get("beard", False), t=t, seed=self.idx)
         ctx.restore()
         if self.p.get("year"): v1.text(ctx, str(self.p["year"]), 0, 320, "Special Elite", 34, (0.3, 0.25, 0.2), 1, "c")
@@ -315,7 +315,7 @@ class Versus(v1.Scene):
             x = W / 2 + side * 480
             a = ease((t - (0.1 if side < 0 else 0.5)) / 0.4)
             ctx.push_group()
-            figure(ctx, x, 950, 2.0, ch.get("pose", "point"), ch.get("face", "angry"), hat=ch.get("hat"), outfit=COLORS.get(ch.get("outfit", "black")),
+            figure(ctx, x, 950, 2.0, ch.get("pose", "point"), ch.get("face", "angry"), look=ch.get("look"), hat=ch.get("hat"), outfit=COLORS.get(ch.get("outfit", "black")),
                    mustache=ch.get("mustache", False), glasses=ch.get("glasses", False), hair=ch.get("hair"), facing=-side, t=t, seed=side + 5)
             label(ctx, d.get("name", ""), x, 140, 100, (1, 1, 1))
             ctx.pop_group_to_source(); ctx.paint_with_alpha(a)

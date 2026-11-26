@@ -85,7 +85,7 @@ def main():
         from stick import figure
         import stickscene as ss
         fg = C.get("figure", {})
-        figure(c, 0, 210, 1.3, fg.get("pose", "shock"), fg.get("face", "shock"), hat=fg.get("hat"), outfit=ss.COLORS.get(fg.get("outfit", "navy")),
+        figure(c, 0, 210, 1.3, fg.get("pose", "shock"), fg.get("face", "shock"), look=fg.get("look"), hat=fg.get("hat"), outfit=ss.COLORS.get(fg.get("outfit", "navy")),
                mustache=fg.get("mustache", False), glasses=fg.get("glasses", False), hair=fg.get("hair"), t=0.5, seed=4)
     elif not extra_obj(c, obj):
         import stickscene as ss

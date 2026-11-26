@@ -168,6 +168,48 @@ def counter(text, **kw):
     return _o("counter", text=text.upper(), **kw)
 
 
-def beat(line, *objs, hold=0.0):
-    """One narration line + the objects that appear while it is spoken. hold = extra seconds after the line."""
-    return {"line": line, "objs": list(objs), "hold": hold}
+def beat(line, *objs, hold=0.0, cut=False):
+    """One narration line + the objects that appear while it is spoken. hold = extra seconds after the line
+    (use hold=timer seconds for a countdown). cut=True = NEW SCENE: everything before disappears and this
+    beat's objects are there instantly (use for each new riddle)."""
+    return {"line": line, "objs": list(objs), "hold": hold, "cut": cut}
+
+
+# ---------------- long-form / riddle pieces ----------------
+def qbar(text, **kw):
+    """Red question bar across the top ("WHICH RAFT WILL SINK?"). Stays until removed (id 'qbar')."""
+    return _o("qbar", text=text.upper(), id=kw.pop("id", "qbar"), **kw)
+
+
+def option(n, x, y, z, **kw):
+    """Numbered red circle marker floating over a 3D point (option 1, 2, 3...)."""
+    return _o("option", n=str(n), x=x, y=y, z=z, id=kw.pop("id", f"opt{n}"), **kw)
+
+
+def timer(seconds=5, **kw):
+    """Countdown clock (top-right) that runs for `seconds` with ticking; use it in a beat with hold=seconds."""
+    return _o("timer", seconds=seconds, id=kw.pop("id", "timer"), **kw)
+
+
+def reveal(x, y, z, r=0.9, **kw):
+    """Pulsing red circle around the answer / clue at a 3D point (r in world units)."""
+    return _o("reveal", x=x, y=y, z=z, r=r, id=kw.pop("id", "reveal"), **kw)
+
+
+def card(title, lines=(), style="dark", **kw):
+    """Full-screen text card: intro titles, rules ("Pause the video now"), "NEXT CHALLENGE", chapter cards.
+    style: dark | yellow | sky. lines = short bullet lines under the title."""
+    return _o("card", title=title.upper(), lines=list(lines), style=style, id=kw.pop("id", "card"), **kw)
+
+
+def score(text, **kw):
+    """Small top-left pill like 'RIDDLE 3/15' that stays until replaced."""
+    return _o("score", text=text.upper(), id=kw.pop("id", "score"), **kw)
+
+
+def person(x, y, z=0, size=1.6, pose="stand", jacket="#E8A317", pants="#33414F", hair="#3A2A20", hat=None,
+           backpack=False, wet=False, tag=None, **kw):
+    """A figure with its own look, for riddles with several people (who is lying, who survives...).
+    hat: None | 'cap' | 'helmet' | 'straw'. wet=True shows dripping water. tag = name shown above the head."""
+    return _o("figure", x=x, y=y, z=z, size=size, pose=pose, jacket=jacket, pants=pants, hair=hair, hat=hat,
+              backpack=backpack, wet=wet, tag=tag, **kw)

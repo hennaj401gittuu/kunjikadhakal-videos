@@ -3,6 +3,22 @@ import cairo, math, random
 from iso import C, hexrgb, shade, GROUNDS
 
 VW, VH = 1080, 1920
+LONG = False
+
+
+def setup(long=False):
+    """Switch between Shorts (1080x1920) and long-form (1920x1080)."""
+    global VW, VH, LONG
+    LONG = long
+    VW, VH = (1920, 1080) if long else (1080, 1920)
+
+
+def fy(a):  # fraction of screen height
+    return a * VH
+
+
+def fx_(a):  # fraction of screen width
+    return a * VW
 U = 100.0  # px per world unit at zoom 1
 FONT_BIG = "Archivo Black"
 FONT_UI = "Poppins"
@@ -458,7 +474,9 @@ def draw_figure(cr, cam, o, t, alpha):
     s = o["size"] * U * cam.zoom
     pose = o["pose"]
     bob = math.sin(t * 3 + o["x"]) * 0.015 * s if pose != "sit" else 0
-    pants, jacket, skin, hair = "#33414F", "#E8A317", "#F1C27D", "#3A2A20"
+    pants, jacket, skin, hair = o.get("pants", "#33414F"), o.get("jacket", "#E8A317"), "#F1C27D", o.get("hair", "#3A2A20")
+    if o.get("wet"):
+        jacket, pants, hair = shade(jacket, 0.62), shade(pants, 0.7), shade(hair, 0.7)
     ellipse(cr, bx, by, 0.3 * s, 0.1 * s, "#000000", alpha * 0.18)
     hip = (bx, by - 0.85 * s + bob)
     if pose == "sit":
@@ -510,6 +528,28 @@ def draw_figure(cr, cam, o, t, alpha):
     cr.set_source_rgba(*rgb(hair), alpha)
     cr.fill()
     cr.restore()
+    hat = o.get("hat")
+    if hat == "cap":
+        fillpoly(cr, [(hc[0] - 0.2 * s, hc[1] - 0.06 * s), (hc[0] + 0.2 * s, hc[1] - 0.06 * s), (hc[0] + 0.36 * s, hc[1] - 0.02 * s), (hc[0] + 0.2 * s, hc[1] + 0.0 * s)], "#C0392B", alpha)
+        cr.arc(hc[0], hc[1] - 0.05 * s, 0.2 * s, math.pi, 2 * math.pi); cr.set_source_rgba(*rgb("#E74C3C"), alpha); cr.fill()
+    elif hat == "helmet":
+        cr.arc(hc[0], hc[1] - 0.03 * s, 0.23 * s, math.pi, 2 * math.pi); cr.set_source_rgba(*rgb("#F5B83D"), alpha); cr.fill()
+        stroke_path(cr, [(hc[0] - 0.27 * s, hc[1] - 0.03 * s), (hc[0] + 0.27 * s, hc[1] - 0.03 * s)], "#D48F1F", 0.05 * s, alpha)
+    elif hat == "straw":
+        ellipse(cr, hc[0], hc[1] - 0.08 * s, 0.38 * s, 0.08 * s, "#E8CC8E", alpha)
+        cr.arc(hc[0], hc[1] - 0.1 * s, 0.17 * s, math.pi, 2 * math.pi); cr.set_source_rgba(*rgb("#D9B77A"), alpha); cr.fill()
+    if o.get("backpack"):
+        fillpoly(cr, [(sh[0] - w / 2 - 0.12 * s, y0 + 0.08 * s), (sh[0] - w / 2 + 0.02 * s, y0 + 0.05 * s), (sh[0] - w / 2 + 0.02 * s, hip[1] - 0.02 * s), (sh[0] - w / 2 - 0.12 * s, hip[1] - 0.05 * s)], "#2E86C1", alpha)
+    if o.get("wet"):
+        for i in range(9):
+            ph = (t * 1.1 + i * 0.37) % 1
+            dx = (-0.26 + (i % 5) * 0.13) * s
+            y0_ = (hip[1] if i < 5 else sh[1] + 0.1 * s)
+            circle(cr, sh[0] + dx, y0_ + ph * 0.7 * s, 0.05 * s, "#4FC3F7", alpha * (1 - ph))
+        ellipse(cr, bx, by, 0.32 * s, 0.09 * s, "#4FC3F7", alpha * 0.55)
+        stroke_path(cr, [(sh[0] - w / 2, y0 + 0.3 * s), (sh[0] + w / 2, y0 + 0.3 * s)], "#2F6FA0", 0.02 * s, alpha * 0.5)
+    if o.get("tag"):
+        cr.save(); pill(cr, str(o["tag"]).upper(), hc[0], hc[1] - 0.5 * s, size=max(20, 0.16 * s), bg="#FFFFFF", fg=INK, alpha=alpha); cr.restore()
     if pose == "sweat":
         for i, (dx, dy) in enumerate(((-0.28, -0.05), (0.27, 0.02))):
             ph = (t * 1.5 + i * 0.5) % 1
@@ -604,11 +644,11 @@ def draw_rock(cr, cam, o, alpha):
 
 def draw_label(cr, cam, o, alpha, pop=1.0):
     ax, ay = cam.P(o["x"], o["y"], o["z"])
-    if not (-40 < ax < VW + 40 and 380 < ay < 1500):
+    if not (-40 < ax < VW + 40 and fy(0.2) < ay < fy(0.78)):
         return
     tx, ty = ax + o["dx"], ay + o["dy"]
     tx = min(max(tx, 170), VW - 170)
-    ty = min(max(ty, 520), 1290)
+    ty = min(max(ty, fy(0.27) if not LONG else fy(0.16)), fy(0.67) if not LONG else fy(0.84))
     stroke_path(cr, [(ax, ay), (tx, ty)], "#FFFFFF", 4, alpha)
     circle(cr, ax, ay, 9, "#FFFFFF", alpha)
     circle(cr, ax, ay, 5, YEL, alpha)
@@ -632,7 +672,7 @@ def draw_measure(cr, cam, o, alpha, grow=1.0):
 
 
 def draw_sun(cr, t, alpha):
-    x, y = 900, 560
+    x, y = (fx_(0.83), fy(0.29)) if not LONG else (fx_(0.72), fy(0.3))
     for k, r in enumerate((150, 115, 85)):
         circle(cr, x, y, r + math.sin(t * 1.2) * 4, "#FFE9A6" if k < 2 else "#FFD66B", alpha * (0.25 if k == 0 else 0.45 if k == 1 else 1))
 
@@ -641,7 +681,7 @@ def draw_clouds(cr, t, alpha, n=3):
     rnd = random.Random(3)
     for i in range(n):
         x = (rnd.random() * VW + t * (12 + i * 5)) % (VW + 400) - 200
-        y = 520 + rnd.random() * 380
+        y = fy(0.27) + rnd.random() * fy(0.2) if not LONG else fy(0.12) + rnd.random() * fy(0.25)
         s = 0.8 + rnd.random() * 0.6
         for dx, dy, r in ((-60, 0, 50), (0, -25, 65), (65, 0, 50), (0, 10, 55)):
             circle(cr, x + dx * s, y + dy * s, r * s, "#FFFFFF", alpha * 0.85)
@@ -651,10 +691,10 @@ def draw_fx(cr, kind, t, alpha):
     rnd = random.Random(11)
     if kind == "night":
         cr.rectangle(0, 0, VW, VH)
-        cr.set_source_rgba(0.04, 0.07, 0.2, 0.5 * alpha)
+        cr.set_source_rgba(0.04, 0.07, 0.2, (0.32 if LONG else 0.5) * alpha)
         cr.fill()
         for i in range(40):
-            x, y = rnd.random() * VW, 480 + rnd.random() * 500
+            x, y = rnd.random() * VW, fy(0.25 if not LONG else 0.08) + rnd.random() * fy(0.26 if not LONG else 0.4)
             circle(cr, x, y, 2 + rnd.random() * 2, "#FFFFFF", alpha * (0.4 + 0.6 * abs(math.sin(t * 2 + i))))
         return
     if kind == "rain":
@@ -675,17 +715,17 @@ def draw_fx(cr, kind, t, alpha):
         return
     if kind == "wind":
         for i in range(16):
-            y = 500 + rnd.random() * 800
+            y = fy(0.26) + rnd.random() * fy(0.42)
             sp = 700 + rnd.random() * 500
             x = (rnd.random() * VW * 2 + t * sp) % (VW + 600) - 300
             L = 120 + rnd.random() * 160
             stroke_path(cr, [(x, y), (x + L * 0.5, y - 6), (x + L, y)], "#FFFFFF", 5, alpha * 0.55)
         return
     if kind == "heat":
-        for i in range(12):
+        for i in range(int(12 * VW / 1080)):
             x0 = 80 + i * 85 + rnd.random() * 30
             ph = (t * 0.5 + rnd.random()) % 1
-            y0 = 1250 - ph * 700
+            y0 = fy(0.65) - ph * fy(0.36)
             pts = [(x0 + math.sin(k * 0.8 + t * 3 + i) * 12, y0 - k * 22) for k in range(8)]
             stroke_path(cr, pts, "#FF8A3D", 5, alpha * 0.45 * math.sin(ph * math.pi))
         cr.rectangle(0, 0, VW, VH)
@@ -694,7 +734,7 @@ def draw_fx(cr, kind, t, alpha):
         return
     if kind == "sparkle":
         for i in range(14):
-            x, y = 150 + rnd.random() * 780, 550 + rnd.random() * 700
+            x, y = fx_(0.14) + rnd.random() * fx_(0.72), fy(0.29) + rnd.random() * fy(0.36 if not LONG else 0.5)
             s = abs(math.sin(t * 3 + i * 1.7))
             L = 22 * s
             stroke_path(cr, [(x - L, y), (x + L, y)], "#FFFFFF", 4, alpha * s)
@@ -703,13 +743,13 @@ def draw_fx(cr, kind, t, alpha):
     if kind == "dust":
         for i in range(60):
             x = (rnd.random() * VW + t * (40 + rnd.random() * 60)) % VW
-            y = 700 + rnd.random() * 600 + math.sin(t + i) * 15
+            y = fy(0.36) + rnd.random() * fy(0.31 if not LONG else 0.5) + math.sin(t + i) * 15
             circle(cr, x, y, 2 + rnd.random() * 4, "#C8A46A", alpha * 0.5)
 
 
 def draw_counter(cr, text, alpha, pop=1.0):
     cr.save()
-    cr.translate(540, 600)
+    cr.translate(VW / 2, fy(0.31) if not LONG else fy(0.24))
     cr.scale(pop, pop)
     pill(cr, text, 0, 0, size=84, font=FONT_BIG, alpha=alpha, bg=YEL, fg=INK)
     cr.restore()
@@ -753,6 +793,10 @@ def draw_obj(cr, cam, o, scene, t, alpha, prog=1.0):
         draw_measure(cr, cam, o, alpha, grow=min(1.0, prog * 2))
     elif k == "counter":
         draw_counter(cr, o["text"], alpha, pop=0.7 + 0.3 * min(1, prog * 3))
+    elif k == "option":
+        draw_option(cr, cam, o, alpha, prog)
+    elif k == "reveal":
+        draw_reveal(cr, cam, o, t, alpha, prog)
 
 
 def anchor(o, cam):
@@ -762,3 +806,104 @@ def anchor(o, cam):
     sx = [cam.P(*p) for p in pts]
     xs = [p[0] for p in sx]; ys = [p[1] for p in sx]
     return ((min(xs) + max(xs)) / 2, max(ys))
+
+
+# ---------------- riddle overlays ----------------
+RED = "#E53935"
+
+
+def draw_qbar(cr, text, alpha, prog):
+    h = 112 if LONG else 150
+    y = -h * (1 - min(1, prog * 3))
+    cr.rectangle(0, y, VW, h)
+    cr.set_source_rgba(*rgb(RED), alpha); cr.fill()
+    cr.rectangle(0, y + h - 8, VW, 8)
+    cr.set_source_rgba(*rgb("#B71C1C"), alpha); cr.fill()
+    size = 64 if LONG else 60
+    w, _ = text_size(cr, text, FONT_BIG, size)
+    maxw = VW - (300 if LONG else 80)
+    if w > maxw:
+        size *= maxw / w
+    outlined_text(cr, text, VW / 2 - (60 if LONG else 0), y + h / 2 - 4, size, fill="#FFFFFF", outline="#7F0000", ow=8, shadow=0, alpha=alpha)
+
+
+def draw_option(cr, cam, o, alpha, prog):
+    x, y = cam.P(o["x"], o["y"], o["z"])
+    r = (44 if LONG else 50) * (0.6 + 0.4 * min(1, prog * 3))
+    circle(cr, x, y + 4, r + 6, "#000000", alpha * 0.25)
+    circle(cr, x, y, r + 6, "#FFFFFF", alpha)
+    circle(cr, x, y, r, RED, alpha)
+    outlined_text(cr, o["n"], x, y - 2, r * 1.15, fill="#FFFFFF", outline="#7F0000", ow=4, shadow=0, alpha=alpha)
+
+
+def draw_timer(cr, o, t_local, alpha):
+    secs = o["seconds"]
+    left = max(0, secs - t_local)
+    cx, cy = (VW - 110, (112 if LONG else 150) + 100) if True else (0, 0)
+    R_ = 70
+    circle(cr, cx, cy + 5, R_ + 10, "#000000", alpha * 0.25)
+    circle(cr, cx, cy, R_ + 10, "#FFFFFF", alpha)
+    circle(cr, cx, cy, R_, "#FDF6E3", alpha)
+    frac = left / secs if secs else 0
+    cr.move_to(cx, cy)
+    cr.arc(cx, cy, R_, -math.pi / 2, -math.pi / 2 + 2 * math.pi * frac)
+    cr.close_path()
+    cr.set_source_rgba(*rgb(RED if left <= 3 else YEL), alpha); cr.fill()
+    num = str(int(math.ceil(left))) if left > 0 else "0"
+    pulse = 1 + 0.12 * max(0, 1 - ((secs - left) % 1) / 0.2)
+    cr.save(); cr.translate(cx, cy); cr.scale(pulse, pulse)
+    outlined_text(cr, num, 0, -2, 66, fill="#FFFFFF", outline=INK, ow=8, shadow=0, alpha=alpha)
+    cr.restore()
+
+
+def draw_reveal(cr, cam, o, t, alpha, prog):
+    x, y = cam.P(o["x"], o["y"], o["z"])
+    rr = o["r"] * U * cam.zoom
+    grow = min(1, prog * 2.5)
+    pulse = 1 + 0.05 * math.sin(t * 8)
+    cr.save(); cr.translate(x, y); cr.scale(rr * pulse, rr * 0.75 * pulse)
+    cr.arc(0, 0, 1, -math.pi / 2, -math.pi / 2 + 2 * math.pi * grow)
+    cr.restore()
+    cr.set_source_rgba(*rgb(RED), alpha); cr.set_line_width(12); cr.stroke()
+
+
+def draw_card(cr, o, alpha, prog):
+    st = o.get("style", "dark")
+    bg = {"dark": "#12324A", "yellow": "#F5B83D", "sky": "#2F8FCB"}.get(st, "#12324A")
+    fg = INK if st == "yellow" else "#FFFFFF"
+    cr.rectangle(0, 0, VW, VH)
+    cr.set_source_rgba(*rgb(bg), alpha); cr.fill()
+    rnd = random.Random(5)
+    for i in range(18):
+        circle(cr, rnd.random() * VW, rnd.random() * VH, 30 + rnd.random() * 120, shade(bg, 1.08), alpha * 0.5)
+    lines = o.get("lines") or []
+    title = o["title"]
+    pop = 0.85 + 0.15 * back_ease(min(1, prog * 3))
+    cy = VH / 2 - (len(lines) * 34 if lines else 0)
+    cr.save(); cr.translate(VW / 2, cy); cr.scale(pop, pop)
+    size = 110 if LONG else 100
+    tw, _ = text_size(cr, title, FONT_BIG, size)
+    if tw > VW - 160:
+        size *= (VW - 160) / tw
+    outlined_text(cr, title, 0, 0, size, fill=(YEL if st != "yellow" else "#FFFFFF"), outline=NAVY, ow=14, shadow=8, alpha=alpha)
+    cr.restore()
+    y = cy + size * 1.25
+    for ln in lines:
+        lsz = 46 if LONG else 44
+        lw, _ = text_size(cr, ln, FONT_UI, lsz, bold=True)
+        if lw > VW - 160:
+            lsz *= (VW - 160) / lw
+        cr.select_font_face(FONT_UI, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD); cr.set_font_size(lsz)
+        e = cr.text_extents(ln)
+        cr.move_to(VW / 2 - e.x_advance / 2, y)
+        cr.set_source_rgba(*rgb(fg), alpha); cr.show_text(ln)
+        y += lsz * 1.5
+
+
+def back_ease(x):
+    c = 1.70158
+    return 1 + (c + 1) * (x - 1) ** 3 + c * (x - 1) ** 2
+
+
+def draw_score(cr, text, alpha):
+    pill(cr, text, 190, (112 if LONG else 150) + 60, size=30, bg="#FFFFFF", fg=INK, alpha=alpha)

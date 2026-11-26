@@ -70,6 +70,15 @@ for t0, kind in ev["events"]:
         last = t0; add(t0, whoosh * 0.7 + popc)
     elif kind == "ding":
         add(t0, ding)
+    elif kind == "tick":
+        xt = np.arange(int(0.08 * SR)) / SR
+        add(t0, (np.sin(2 * np.pi * 2200 * xt) * np.exp(-xt * 80) * 0.5).astype(np.float32))
+        add(t0 + 0.5, (np.sin(2 * np.pi * 1600 * xt) * np.exp(-xt * 80) * 0.3).astype(np.float32))
+    elif kind == "buzz":
+        xb = np.arange(int(0.9 * SR)) / SR
+        add(t0, (sum(np.sin(2 * np.pi * f * xb) for f in (523.25, 659.25, 783.99)) * np.exp(-xb * 4) * 0.3).astype(np.float32))
+    elif kind == "whoosh":
+        add(t0, whoosh * 1.2)
     elif kind == "chime":
         for j, f in enumerate((1046.5, 1318.5, 1568.0, 2093.0)):
             add(t0 + j * 0.09, np.sin(2 * np.pi * f * xc) * np.exp(-xc * 3) * 0.3)

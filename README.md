@@ -70,3 +70,44 @@ Every fact and number must come from a source read in this run. No weapons, no g
 Look at frame 0 (it must show the title and a complete, striking scene), and a frame from each third.
 Labels must not cover the build; the mascot must be visible; arrows must read clearly; nothing important below y=1350
 (captions and the Shorts buttons live there).
+
+---------------------------------------------------------------------------------------------------
+# LONG-FORM (16:9, 1920x1080) – riddle videos
+
+Put `FORMAT = "long"` in script.py. Captions are off, the camera rules adapt, and render.py renders in parallel.
+Same commands: tts.py, render.py (--frames to check), audio.py; then
+`python3 ~/btseng/thumb.py <seconds> "LINE 1" "LINE 2" "TAG"` -> thumb.jpg (1280x720), with <seconds> inside a riddle's
+question beat (characters/options visible). Long files must stay under 95 MB (an 8-12 min video is ~60-80 MB).
+
+Extra pieces: `qbar(question)`, `option(n, x,y,z)`, `timer(seconds)` (beat with hold=seconds), `reveal(x,y,z,r)`,
+`card(title, lines, style)`, `score("3 / 18")`, `person(...)` (figures with their own jacket/pants/hair/hat/backpack/wet).
+`beat(..., cut=True)` starts a NEW SCENE: everything before vanishes and the new objects are there at once.
+
+## Format A – riddle compilation (most days): read example_riddles.py first (the approved pilot, 15 riddles, 7.5 min)
+- 18-20 riddles = 8-12 minutes. Title: "Can You Survive These <N> Riddles?" style.
+- Intro card beat (what, how many, "count your correct answers"), then per riddle the 4 beats of `riddle()`:
+  "Riddle number N." card -> scene + qbar + numbered options + score (cut=True) -> "You have ten seconds." timer(10)
+  -> answer line + reveal circle on the clue. Outro card with score bands + "comment your score".
+- Every riddle is a SURVIVAL riddle with ONE clear visual clue the viewer can actually see and ONE defensible answer
+  (wet vs dry clothes, stilts vs ground, door facing away from the wind, hung food, pyramid sandbags, open clearing...).
+  The answer line names the option and explains the clue in 1-2 sentences, plus a real survival tip where true.
+- Options sit left/middle/right on screen: L=(2.2,7.8) M=(5,5) R=(7.8,2.2) on a 10x10 ground. Put the option markers
+  ABOVE the tallest object (h) or at the start of each path/bridge (spots=...). Make clues BIG (figures size 1.6-1.8).
+  Things that run away from the camera (bridges, rivers) read badly: run them left-to-right on screen (along x=y).
+- Check stills of every riddle's question beat before the full render: all 3 options and the clue must be readable.
+- Never copy riddles from other channels' videos; write our own survival versions.
+
+## Format B – deep story puzzle (Tuesdays and Fridays): 3-6 minutes, ONE puzzle told as a survival story
+Like the classic "can you solve the jailbreak riddle" style, but our own survival puzzles (examples: get 3 people and
+a heavy pack across a river with a 2-seat raft before the flood; measure exactly 9 minutes with a 7- and a 4-minute
+hourglass; cross a broken bridge at night with one torch (bridge and torch); ration 3 bottles across 4 days; find the
+one safe path across a swamp grid using clues; signal a plane with 3 fires).
+Structure (cards/objects of this engine):
+1. Story hook in the scene (2-4 beats): who you are, what's at stake, the deadline.
+2. `card("THE RULES", [3-5 short rule lines])`, then `card("PAUSE NOW", ["Try to solve it yourself"])` with a timer(5) beat.
+3. A tempting wrong attempt shown and why it fails (red arrows/counter).
+4. The solution step by step: one beat per step, the scene updating (objects moving = replace by id), a counter()
+   with the running time/total, labels on the key moves.
+5. Payoff: the escape/survival happens; last line asks viewers to comment if they solved it, then an outro card.
+The puzzle must be logically airtight: check the solution step by step in Python before writing narration.
+Title: "Can You Solve the <Thing> Survival Riddle?".

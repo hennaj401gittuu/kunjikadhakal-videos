@@ -24,6 +24,18 @@ Rules: never present a debunked theory as true; never say a real person or organ
 - End with the payoff + a reflective last line, then "Subscribe for more untold stories" and ask which story to tell next.
 - Accuracy still matters: every name, date, number and quote must come from sources read in this run; soften anything uncertain ("reportedly", "legend says"). Mark legends as legends.
 
+### 2b. HOOK CHECKLIST for long videos (since 26 Nov 2026; the owner said the text was not hooking enough)
+- script.py MUST define HOOK = ["LINE 1", "LINE 2"] (caps, <= 26 chars each): shown huge over the first segment, e.g. ["HE SOLD 10% OF APPLE", "FOR JUST $800"]. It repeats the thumbnail promise in different words.
+- Optional EMPH = ["word", ...]: extra words to flash yellow in the subtitles (numbers, years, money and power words like billion, secret, stole, bankrupt, vanished are highlighted automatically).
+- Sentence 1 (under 20 words) = the most shocking fact, with a number or a name: "In 1976, one man owned ten percent of Apple, and sold it for just 800 dollars."
+- Sentence 2 = the stakes or the contrast: "Today that share would be worth billions."
+- Sentence 3 = the open question: "So why did he walk away, and did he ever regret it?" then "This is the ENTIRE story of ...".
+- Use "BUT" and "SO" between beats, never "and then": every beat changes the situation.
+- Every 4-6 segments end on a mini-cliffhanger ("He had one week to pay. He had nothing.").
+- Banned openers/fillers: "Hello", "Welcome", "In this video", "Let's dive in", "Have you ever wondered", "Before we start", "Interestingly", "It is worth noting".
+- On-screen text must be punchy: stick-scene captions 2-4 words with a number or a verb ("$800 MISTAKE", "BANKRUPT. AGAIN.", "SHE SAID NO"); "words" scenes max 2 lines of max 5 words; "bigdate" for every big turning-point year.
+- Read the first 30 seconds back to yourself as a viewer who is about to swipe away: if there is no reason to stay, rewrite it.
+
 ## 3. Lengths
 - Long video: 10-15 minutes, ~1,500-2,100 words, ~140-190 segments of ONE sentence (or two very short ones) so the picture changes every ~4-5 s. 5-7 chapters (chapter cards optional; use "bigdate" or "words" scenes as section breaks).
 - Shorts: 45-60 s, 110-145 words, 6-9 segments, ONE amazing twist from a story (can be a different subject from the long video).

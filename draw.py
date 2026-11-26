@@ -15,12 +15,23 @@ def rgb(c):
     return hexrgb(c) if isinstance(c, str) else c
 
 
+YAWW = [math.sin(math.radians(45)), math.cos(math.radians(45))]  # depth weights for the current view
+
+
 class Cam:
-    def __init__(self, cx=0, cy=0, zoom=1.0, ox=540, oy=930):
+    """Orthographic camera orbiting the build. yaw 45 / elev 35.26 = classic isometric.
+    yaw must stay between ~15 and ~75 degrees so the +x and +y sides stay the visible ones."""
+    def __init__(self, cx=0, cy=0, zoom=1.0, ox=540, oy=930, yaw=45.0, elev=35.264):
         self.cx, self.cy, self.zoom, self.ox, self.oy = cx, cy, zoom, ox, oy
+        self.yaw, self.elev = yaw, elev
+        t, f = math.radians(yaw), math.radians(elev)
+        self.ct, self.st, self.sf, self.cf = math.cos(t), math.sin(t), math.sin(f), math.cos(f)
+        self.S = 1.2247 * U
 
     def base(self, x, y, z):
-        return ((x - y) * C * U, (x + y) * 0.5 * U - z * U)
+        u = x * self.ct - y * self.st
+        v = x * self.st + y * self.ct
+        return (u * self.S, v * self.S * self.sf - z * self.S * self.cf)
 
     def P(self, x, y, z):
         bx, by = self.base(x, y, z)
@@ -163,7 +174,13 @@ def obj_points(o, scene):
         return [(o["x"] - sp, o["y"] - sp, o["z"]), (o["x"] + sp, o["y"] + sp, o["z"] + 0.4 * o["size"])]
     if k == "patch":
         g = scene.get(o.get("g") or "ground")
-        return []
+        if not g:
+            return []
+        if o["face"] == "y":
+            Y = g["y"] + g["d"]
+            return [(o["a"], Y, o["z0"]), (o["b"], Y, o["z0"]), (o["a"], Y, o["z1"]), (o["b"], Y, o["z1"])]
+        X = g["x"] + g["w"]
+        return [(X, o["a"], o["z0"]), (X, o["b"], o["z0"]), (X, o["a"], o["z1"]), (X, o["b"], o["z1"])]
     if k == "measure":
         return [(o["x"], o["y"], o["z0"]), (o["x"], o["y"], o["z1"])]
     return []
@@ -183,7 +200,7 @@ def depth_key(o, scene):
         return 1e7
     if k in ("box", "room", "water", "roof"):
         z = o.get("z", 0)
-        base = o["x"] + o["w"] * 0.5 + o["y"] + o["d"] * 0.5
+        base = 1.4142 * ((o["x"] + o["w"] * 0.5) * YAWW[0] + (o["y"] + o["d"] * 0.5) * YAWW[1])
         if k == "water":
             return base - 0.5 + z * 0.01
         if k == "roof":
@@ -192,11 +209,11 @@ def depth_key(o, scene):
             return base - 0.3
         return base + z * 0.01
     if k in ("cyl", "cone", "tree", "figure", "critter", "rock"):
-        return o["x"] + o["y"] + o.get("z", 0) * 0.01 + 0.01
+        return 1.4142 * (o["x"] * YAWW[0] + o["y"] * YAWW[1]) + o.get("z", 0) * 0.01 + 0.01
     if k in ("poly", "line3", "arrow"):
         pts = o["pts"]
-        mx = max(p[0] + p[1] for p in pts)
-        mn = min(p[0] + p[1] for p in pts)
+        mx = max(1.4142 * (p[0] * YAWW[0] + p[1] * YAWW[1]) for p in pts)
+        mn = min(1.4142 * (p[0] * YAWW[0] + p[1] * YAWW[1]) for p in pts)
         return (mx + mn) / 2 + (0.5 if k == "arrow" else 0)
     return 0
 
@@ -307,7 +324,7 @@ def draw_cyl(cr, cam, o, alpha, cone=False):
     x, y, z, r, h = o["x"], o["y"], o["z"], o["r"], o["h"]
     bx, by = cam.P(x, y, z)
     tx, ty = cam.P(x, y, z + h)
-    rx, ry = r * 1.2247 * U * cam.zoom, r * 0.7071 * U * cam.zoom
+    rx, ry = r * cam.S * cam.zoom, r * cam.S * cam.sf * cam.zoom
     col = o["color"]
     if cone:
         g = cairo.LinearGradient(bx - rx, 0, bx + rx, 0)
@@ -587,6 +604,8 @@ def draw_rock(cr, cam, o, alpha):
 
 def draw_label(cr, cam, o, alpha, pop=1.0):
     ax, ay = cam.P(o["x"], o["y"], o["z"])
+    if not (-40 < ax < VW + 40 and 380 < ay < 1500):
+        return
     tx, ty = ax + o["dx"], ay + o["dy"]
     tx = min(max(tx, 170), VW - 170)
     ty = min(max(ty, 520), 1290)

@@ -80,56 +80,129 @@ def active(tt):
     return out
 
 
-# ---------- camera targets per beat ----------
-cam0 = D.Cam()
+# ---------- cinematography: one planned shot per beat ----------
+# A shot = (world point, zoom, yaw, elev) at its start and end; the camera moves start->end through the beat.
+# Auto rules: close-ups on whatever is new, alternating angles, cuts with a zoom punch, orbit reveals.
+WORLD_SKIP = ("label", "fx", "sun", "clouds", "counter", "measure")
 
 
-def fit(objs, scene, zmul=1.0):
-    pts = []
+def pts_of(objs, scene):
+    out = []
     for o in objs:
-        if o["kind"] in ("label", "fx", "sun", "clouds", "counter", "measure"):
+        if o["kind"] in WORLD_SKIP:
             continue
-        for p in D.obj_points(o, scene):
-            pts.append(cam0.base(*p))
+        out += D.obj_points(o, scene)
+    return out
+
+
+def frame_pts(pts, yaw, elev, fill_w=1000, fill_h=900):
+    """World centre + zoom that frames these points under this view."""
     if not pts:
-        return (0, 0, 1.0)
-    xs = [p[0] for p in pts]; ys = [p[1] for p in pts]
+        return (5, 5, 0), 1.0
+    cam = D.Cam(yaw=yaw, elev=elev)
+    sp = [cam.base(*p) for p in pts]
+    xs = [p[0] for p in sp]; ys = [p[1] for p in sp]
     bw, bh = max(xs) - min(xs) + 60, max(ys) - min(ys) + 60
-    z = min(1010 / bw, 900 / bh) * zmul
-    z = max(0.35, min(3.2, z))
-    return ((min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2, z)
+    z = max(0.35, min(4.0, min(fill_w / bw, fill_h / bh)))
+    cx = (min(xs) + max(xs)) / 2; cy = (min(ys) + max(ys)) / 2
+    # convert screen-base centre back to a world point on the plane through the points' mean height
+    zm = sum(p[2] for p in pts) / len(pts)
+    u = cx / cam.S; vv = (cy + zm * cam.S * cam.cf) / (cam.S * cam.sf)
+    wx = u * cam.ct + vv * cam.st; wy = -u * cam.st + vv * cam.ct
+    return (wx, wy, zm), z
 
 
-targets = []
+# (yaw, elev) presets. yaw ~10 = looking straight at the left (+y) cut face; ~80 = at the right (+x) face.
+SIDE_Y, SIDE_X = (11, 7), (79, 7)          # side cross-section (stepwell-style underground view)
+EYE = [(30, 11), (60, 13)]                 # eye level, close to the character
+TOP = (45, 62)                             # high, almost top-down
+ANG = [(38, 30), (58, 44), (30, 18), (52, 24), TOP]   # rotating variety for other beats
+
+
+def pick_angle(i, new, scene):
+    """Choose the view that shows this beat's new parts best."""
+    under = [o for o in new if o["kind"] == "patch" or min((p[2] for p in D.obj_points(o, scene)), default=0) < -0.2]
+    if under:
+        faces = [o.get("face") for o in under if o["kind"] == "patch"]
+        return SIDE_X if faces and all(f == "x" for f in faces) else SIDE_Y
+    if any(o["kind"] in ("figure", "critter") for o in new):
+        return EYE[i % 2]
+    return ANG[i % len(ANG)]
+shots = []
+prev_kind = None
 for i, b in enumerate(B):
     tmid = starts[i] + 0.6
     objs = [o for o, ton, a, od in active(tmid + 0.5)]
     scene = {o["id"]: o for o in objs}
-    tg = fit(objs, scene)
-    for (bi, c) in cams:
-        if bi == i:
-            if c["kind"] == "focus":
-                bx, by = cam0.base(c["x"], c["y"], c["z"])
-                tg = (bx, by, fit(objs, scene)[2] * c["zoom"])
-            else:
-                tg = fit(objs, scene, c["zoom"] or 1.0)
-    targets.append(tg)
-endtg = fit([o for o, *_ in active(T - 0.5)], {}, 0.9)
+    new = [o for o in b["objs"] if o.get("kind") not in WORLD_SKIP + ("remove", "focus", "overview")]
+    camcmd = [c for (bi, c) in cams if bi == i]
+    yaw, elev = pick_angle(i, new, scene)
+    allpts = pts_of(objs, scene)
+    last = i == len(B) - 1
+    if last or (camcmd and camcmd[-1]["kind"] == "overview"):
+        zm = (camcmd[-1].get("zoom") if camcmd else None) or 1.0
+        c, z = frame_pts(allpts, 45, 34)
+        ys, ye = (30, 60) if i % 2 else (60, 30)
+        shot = dict(p0=c, p1=c, z0=z * zm * 1.12, z1=z * zm * 0.92, y0=ys, y1=ye, e0=30, e1=40, cut=False, kind="wide")
+    elif camcmd and camcmd[-1]["kind"] == "focus":
+        f = camcmd[-1]
+        elev = min(elev, 22)  # details read best from a low angle
+        c, z = frame_pts(allpts, yaw, elev)
+        p = (f["x"], f["y"], f["z"])
+        shot = dict(p0=p, p1=p, z0=z * f["zoom"], z1=z * f["zoom"] * 1.1, y0=yaw - 4, y1=yaw + 4, e0=elev, e1=elev + 3, cut=True, kind="close")
+    elif i == 0:
+        figs = [o for o in objs if o["kind"] == "figure"]
+        c_all, z_all = frame_pts(allpts, 40, 30)
+        if figs:
+            c, z = frame_pts(D.obj_points(figs[0], scene), 34, 12)
+            z = min(z * 0.5, z_all * 2.4)
+        else:
+            c, z = c_all, z_all * 1.3
+        shot = dict(p0=c, p1=c_all, z0=z, z1=z_all * 1.05, y0=34, y1=44, e0=12, e1=30, cut=True, kind="hook")
+    elif new:
+        npts = pts_of(new, scene)
+        c_all, z_all = frame_pts(allpts, yaw, elev)
+        c, z = frame_pts(npts, yaw, elev, 760, 700)
+        z = min(z, z_all * 2.3)
+        z = max(z, z_all * 1.25)
+        pull = 0.82 if i % 2 else 0.9
+        dy = 2 if elev < 10 else 5
+        shot = dict(p0=c, p1=c, z0=z, z1=z * pull, y0=yaw - dy, y1=yaw + dy, e0=elev, e1=elev + 2,
+                    cut=(prev_kind in ("close", "hook")), kind="close")
+    else:
+        c, z = frame_pts(allpts, yaw, elev)
+        shot = dict(p0=c, p1=c, z0=z * 1.05, z1=z * 1.22, y0=yaw + 4, y1=yaw - 4, e0=elev, e1=elev, cut=False, kind="medium")
+    shots.append(shot)
+    prev_kind = shot["kind"]
+
+
+def lerp(a, b, e):
+    return a + (b - a) * e
+
+
+def shot_at(sh, e):
+    p = tuple(lerp(sh["p0"][k], sh["p1"][k], e) for k in range(3))
+    return p, lerp(sh["z0"], sh["z1"], e), lerp(sh["y0"], sh["y1"], e), lerp(sh["e0"], sh["e1"], e)
 
 
 def camera(tt):
     i = max(k for k in range(len(B)) if starts[k] <= tt + 1e-9)
-    prev = targets[i - 1] if i > 0 else targets[0]
-    cur = targets[i]
-    e = ease((tt - starts[i]) / 0.9)
-    cx = prev[0] + (cur[0] - prev[0]) * e
-    cy = prev[1] + (cur[1] - prev[1]) * e
-    z = prev[2] + (cur[2] - prev[2]) * e
-    z *= 1 + 0.035 * min(1, (tt - starts[i]) / max(1, durs[i]))
-    if i == len(B) - 1 and tt > starts[i] + durs[i] - END_HOLD - 0.3:
-        e2 = ease((tt - (starts[i] + durs[i] - END_HOLD - 0.3)) / 1.6)
-        cx += (endtg[0] - cx) * e2; cy += (endtg[1] - cy) * e2; z += (endtg[2] - z) * e2
-    return D.Cam(cx, cy, z)
+    sh = shots[i]
+    local = tt - starts[i]
+    e = ease(local / max(0.5, durs[i])) if sh["kind"] != "hook" else ease(local / max(0.5, durs[i]))
+    p, z, yw, el = shot_at(sh, e)
+    punch = 1.0
+    if i > 0 and not sh["cut"] and local < 0.55:
+        # quick eased move from where the previous shot ended
+        pp, pz, py, pe = shot_at(shots[i - 1], 1.0)
+        k = ease(local / 0.55)
+        p = tuple(lerp(pp[j], p[j], k) for j in range(3)); z = lerp(pz, z, k); yw = lerp(py, yw, k); el = lerp(pe, el, k)
+    elif sh["cut"] and i > 0 and local < 0.25:
+        punch = 1 + 0.07 * (1 - ease(local / 0.25))
+    cam = D.Cam(yaw=yw, elev=el, zoom=z * punch)
+    bx, by = cam.base(*p)
+    cam.cx, cam.cy = bx, by
+    return cam
 
 
 # ---------- captions ----------
@@ -217,6 +290,7 @@ def frame(cr, tt):
     cr.set_source(g); cr.paint()
     act = active(tt)
     cam = camera(tt)
+    D.YAWW[0], D.YAWW[1] = cam.st, cam.ct
     scene = {o["id"]: o for o, *_ in act}
     bg = [x for x in act if x[0]["kind"] in ("sun", "clouds")]
     for o, ton, a, od in bg:

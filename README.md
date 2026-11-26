@@ -35,3 +35,6 @@ Engine for the Kunjikadhakal mystery/riddle Shorts and long videos.
 
 ## Story-riddle Short (9:16, added 25 Nov 2026, Kandupidi run C)
 - `money/riddle_short.py`: lateral-thinking story riddle in flat vector style (sunset road with palms + bokeh, Thrissur bank interior + loan form with typed fields, value chips, sunburst shock zoom with sweat drop, red no-sign over LYING/FORGOT, count-up bubbles, night scene with glowing ?, 5→1 clock, brain mascot + comment box ANSWER + Follow→Following). Captions lower-middle (y 1200) with dark outline. Reuses money.py person/bubble/clock5 and money_short.py bulb/comment_box/follow_btn/build_mix. Storyteller voice ('male', 0.88, 1.27) ≈ 125 Hz. Copy next to money.py; `python3 riddle_short.py stills|render`. Replace BEATS for a new riddle.
+
+## Debt-chain money Short (9:16, added 26 Nov 2026, Kandupidi run A)
+- `money/debt_short.py` (+ `ledger_debt.py`): variant of money_short.py with 4 characters (Jose/Hamsa/Leela/Traveller), walk=(who, x_from, x_to) entrances/exits, and a `circle` scene (three paper-circle portraits with OWES/PAID arrows and a note travelling round the chain). Storyteller voice ('male', 0.88, 1.33) ≈ 123 Hz.

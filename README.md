@@ -38,3 +38,6 @@ Engine for the Kunjikadhakal mystery/riddle Shorts and long videos.
 
 ## Debt-chain money Short (9:16, added 26 Nov 2026, Kandupidi run A)
 - `money/debt_short.py` (+ `ledger_debt.py`): variant of money_short.py with 4 characters (Jose/Hamsa/Leela/Traveller), walk=(who, x_from, x_to) entrances/exits, and a `circle` scene (three paper-circle portraits with OWES/PAID arrows and a note travelling round the chain). Storyteller voice ('male', 0.88, 1.33) ≈ 123 Hz.
+
+## Beard story-riddle Short (9:16, added 26 Nov 2026, Kandupidi run B)
+- `money/beard_short.py`: riddle_short.py variant (Best Beard contest stage instead of bank, entry card, `beard()` overlay for M.person, 1-20 count bubbles, stacked chips). Riddle: 20+ shaves a day but a long uncut beard (ANSWER: barber). Storyteller voice ('male', 0.88, 1.27) ≈ 111-129 Hz. `python3 beard_short.py stills|render`.

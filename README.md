@@ -41,3 +41,6 @@ Engine for the Kunjikadhakal mystery/riddle Shorts and long videos.
 
 ## Beard story-riddle Short (9:16, added 26 Nov 2026, Kandupidi run B)
 - `money/beard_short.py`: riddle_short.py variant (Best Beard contest stage instead of bank, entry card, `beard()` overlay for M.person, 1-20 count bubbles, stacked chips). Riddle: 20+ shaves a day but a long uncut beard (ANSWER: barber). Storyteller voice ('male', 0.88, 1.27) ≈ 111-129 Hz. `python3 beard_short.py stills|render`.
+
+## TRY IT Short (9:16, added 26 Nov 2026, Kandupidi run C)
+- `tryit/tryit_short.py`: brain/body trick done along with the video (floating arm / Kohnstamm effect). Soft pseudo-3D kid (yellow T-shirt, jeans; `kid()` with arm angles, moods smile/effort/wow) in a cosy room with a centre doorway, two-line top captions (white + coloured, outlined Poppins ExtraBold), STEP badges, 30 s circular countdown (`countdown()`), x-ray scene with glowing brain + yellow signal line to the shoulder muscle, effect-name card, comment box / share / Follow end. Beats with `at` are pinned to the countdown start. Soft female voice ('female', 0.95, 1.08) ≈ 223-240 Hz; ambient pad + bell bed. Copy to /home/claude/tryit/; `python3 tryit_short.py stills|render`. Replace BEATS/scenes for a new trick.

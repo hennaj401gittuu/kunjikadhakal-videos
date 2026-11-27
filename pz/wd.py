@@ -388,6 +388,51 @@ def flat(ctx, t, s):
                     ctx.set_source(rg); ctx.paint()
             for wx in (90, 410):
                 ctx.set_source_rgba(0.05, 0.05, 0.08, 1); ctx.arc(cx+wx, 1250, 22, 0, 2*math.pi); ctx.fill()
+    if scene == 'theatre':
+        # old single-screen cinema hall at night: marquee bulbs, film poster, ticket counter, projection room window glowing red
+        ctx.rectangle(0, 1420, W, H); ctx.set_source_rgba(*hexc('#1a1626')); ctx.fill()
+        ctx.set_source_rgba(1, 1, 1, 0.06)
+        for k in range(8): ctx.rectangle(0, 1440+k*30, W, 3); ctx.fill()
+        # palms behind
+        ctx.set_source_rgba(*hexc('#060b16'))
+        for px, h0 in ((60, 640), (1010, 600)):
+            ctx.move_to(px, 1430); ctx.curve_to(px+20, 1250, px+40, 1000, px+50, 1430-h0); ctx.set_line_width(16); ctx.stroke()
+            for kk in range(7):
+                a = -math.pi/2 + (kk-3)*0.55 + 0.05*math.sin(t*2+kk); ctx.move_to(px+50, 1430-h0)
+                ctx.curve_to(px+50+math.cos(a)*80, 1430-h0+math.sin(a)*80, px+50+math.cos(a)*150, 1430-h0+math.sin(a)*120+30, px+50+math.cos(a)*170, 1430-h0+math.sin(a)*110+80)
+                ctx.set_line_width(11); ctx.stroke()
+        # building
+        bx0, bx1, top = 150, 930, 700
+        ctx.rectangle(bx0, top, bx1-bx0, 1430-top); fill_stroke(ctx, '#d9cfb8', 6)
+        ctx.move_to(bx0-30, top); ctx.line_to(W/2, top-120); ctx.line_to(bx1+30, top); ctx.close_path(); fill_stroke(ctx, '#7a2e22', 6)
+        # projection-room window (red, pulsing)
+        a = 0.75 + 0.25*math.sin(t*6)
+        rrect(ctx, W/2-60, top-60, 120, 50, 8); ctx.set_source_rgba(*hexc('#ff2a2a', a)); ctx.fill()
+        rg = cairo.RadialGradient(W/2, top-35, 10, W/2, top-35, 300); rg.add_color_stop_rgba(0, 1, 0.1, 0.1, 0.45*a); rg.add_color_stop_rgba(1, 1, 0, 0, 0)
+        ctx.set_source(rg); ctx.paint()
+        # name board with marquee bulbs
+        rrect(ctx, 220, top+40, 640, 130, 14); fill_stroke(ctx, '#1d2a5a', 6)
+        text(ctx, 'STAR CINEMAS', W/2, top+128, 64, '#ffd23f', weight=cairo.FONT_WEIGHT_BOLD)
+        for k in range(26):
+            u = k/25; on = (int(t*6) + k) % 3 != 0
+            for (xx, yy) in ((232 + u*616, top+52), (232 + u*616, top+158)):
+                ctx.set_source_rgba(*hexc('#ffe9a8' if on else '#6a5a30')); ctx.arc(xx, yy, 6, 0, 2*math.pi); ctx.fill()
+        # film poster
+        rrect(ctx, 210, top+230, 260, 360, 10); fill_stroke(ctx, '#2a1a3a', 6)
+        rg2 = cairo.LinearGradient(0, top+230, 0, top+590); rg2.add_color_stop_rgba(0, *hexc('#e85a2a')); rg2.add_color_stop_rgba(1, *hexc('#3a1040'))
+        rrect(ctx, 225, top+245, 230, 270, 6); ctx.set_source(rg2); ctx.fill()
+        ctx.set_source_rgba(0.05, 0.03, 0.08, 1); ctx.arc(340, top+380, 48, 0, 2*math.pi); ctx.fill()
+        ctx.move_to(270, top+515); ctx.curve_to(290, top+420, 390, top+420, 410, top+515); ctx.close_path(); ctx.fill()
+        text(ctx, 'NIGHT SHOW', 340, top+562, 34, '#ffffff')
+        # ticket counter
+        rrect(ctx, 560, top+300, 300, 230, 10); fill_stroke(ctx, '#5a3a22', 6)
+        rrect(ctx, 590, top+330, 240, 110, 60); ctx.set_source_rgba(*hexc('#ffc65a')); ctx.fill()
+        ctx.set_source_rgba(0, 0, 0, 0.5); ctx.set_line_width(4)
+        for k in range(1, 6): ctx.move_to(590 + k*40, top+330); ctx.line_to(590 + k*40, top+440); ctx.stroke()
+        text(ctx, 'TICKETS', 710, top+495, 38, '#ffd23f')
+        # doors
+        rrect(ctx, 430, top+620, 220, 110, 6); fill_stroke(ctx, '#3a2418', 6)
+        ctx.move_to(540, top+620); ctx.line_to(540, top+730); ctx.set_source_rgba(0, 0, 0, 0.6); ctx.set_line_width(5); ctx.stroke()
     tape(ctx, 1640, -0.04, t)
 
 def lineup(ctx, t, s, sus, beat_t0):
@@ -424,8 +469,8 @@ def rule(ctx, t, s, sus, beat_t0, show_truth, show_lies):
     ctx.set_source(rg); ctx.paint()
     for i, x in enumerate((240, 540, 840)):
         avatar(ctx, x, 1000, 92, sus[i]['name'], back(prog(t, beat_t0 + i*0.1, 0.35)), t)
-    pill(ctx, W/2, 760, 330, 92, '#2fbf4f', '1 TRUTH ✓', size=48, p=show_truth)
-    pill(ctx, W/2, 1260, 330, 92, '#e8283c', '2 LIES ✕', size=48, p=show_lies)
+    pill(ctx, W/2, 760, 360, 92, '#2fbf4f', s.get('truth_label', '1 TRUTH ✓'), size=48, p=show_truth)
+    pill(ctx, W/2, 1260, 360, 92, '#e8283c', s.get('lies_label', '2 LIES ✕'), size=48, p=show_lies)
 
 def solo(ctx, t, s, c, beat_t0, t1, idx):
     backdrop(ctx, t, cone=True, lamp_x=W/2)
@@ -464,7 +509,7 @@ def summary(ctx, t, s, sus, beat_t0, typing=None, follow=False):
         ctx.save(); ctx.translate(W/2, 1550); ctx.scale(p, p)
         rrect(ctx, -170, -50, 340, 100, 50); ctx.set_source_rgba(*hexc('#2d6bff')); ctx.fill()
         text(ctx, '+ Follow', 0, 16, 46, '#ffffff'); ctx.restore()
-        text(ctx, '@Kandupidii', W/2, 1660, 30, '#9aa3bd')
+        text(ctx, 'Follow for more mysteries!', W/2, 1660, 32, '#9aa3bd')
 
 # ------------------------------------------------------------------ build
 def build(case, out_dir, name, stills=False):

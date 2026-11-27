@@ -57,3 +57,6 @@ Engine for the Kunjikadhakal mystery/riddle Shorts and long videos.
 
 ## Ring-finger TRY IT Short (9:16, added 27 Nov 2026, Kandupidi run B)
 - `tryit/ring_short.py`: ring finger that won't lift (hand flat, middle finger folded under). Reuses tryit_short.py (room, kid, caption2, badge, tag, comment box, follow). New: wooden `table()` background, top-down pseudo-3D `hand()` (per-finger lift 0-1, middle `fold`, ring `tremble`, `glow`, `xray`), x-ray `tendons()` with pink juncturae-tendinum bridges + PULLED TIGHT arrow, 10 s `countdown()`, OWN MUSCLE / NO EXTRA MUSCLE labels, JUNCTURAE TENDINUM name card. Female voice ≈ 230 Hz. `python3 ring_short.py stills|render`.
+
+## Theatre whodunit (9:16, added 27 Nov 2026, Kandupidi run C)
+- `pz/case_theatre.py`: "ONLY 1 IS LYING" variant (`n_true=2`; rule beats take `truth_label`/`lies_label`, summary takes `rule_label`). New wd.py `flat()` location 'theatre' (Star Cinemas single-screen hall at night: marquee bulbs, NIGHT SHOW poster, ticket counter, red projection-room window). End card no longer names a channel ("Follow for more mysteries!"). ANSWER: Jithin.

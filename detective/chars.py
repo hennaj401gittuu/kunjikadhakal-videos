@@ -57,6 +57,19 @@ POLICE = dict(name='POLICE', h=0.97, sex='m', skin='#b07a50', hair='#15110e', ha
               top='uniform', top_col='#c2a46a', shirt='#c2a46a', bottom='trousers', bot_col='#b69860', shoe='leather_black',
               hat='police', hat_col='#c2a46a', glasses=None, build=1.05)
 
+RAJU = dict(name='RAJU', h=0.95, sex='m', skin='#a86e46', hair='#15110e', hairstyle='short', stache='thick_grey', beard=None,
+            top='work', top_col='#c8502e', shirt='#c8502e', bottom='mundu', bot_col='#f4f1e8', border='#d8a83a', shoe='chappal_blue',
+            hat=None, glasses=None, build=1.05)
+KUTTAN = dict(name='KUTTAN', h=0.92, sex='m', skin='#8e5a36', hair='#9a9590', hairstyle='receding', stache='thick_grey', beard=None,
+              top='work', top_col='#3a6a8a', shirt='#3a6a8a', bottom='mundu', bot_col='#e8e2cc', border='#2a5a3a', shoe='chappal_blue',
+              hat=None, glasses=None, build=1.0)
+AMMINI = dict(name='AMMINI', h=0.84, sex='f', skin='#c08458', hair='#1a1410', hairstyle='bun', stache=None, beard=None,
+              top='saree', top_col='#a8324a', shirt='#e0b23a', bottom='saree', bot_col='#a8324a', border='#e0b23a', shoe='flat_sandal',
+              hat=None, glasses=None, build=1.0)
+JOSE = dict(name='JOSE', h=0.97, sex='m', skin='#c08a60', hair='#2a2622', hairstyle='combed_grey', stache='neat', beard=None,
+            top='blazer', top_col='#2e2a52', shirt='#f2ead2', tie='#b8862a', bottom='trousers', bot_col='#24243a', shoe='leather_black',
+            hat=None, glasses=None, build=1.05)
+
 # ------------------------------------------------------------------ geometry
 def geo(spec):
     h = 900*spec['h']; hh = h/7.4; f = spec['sex'] == 'f'; b = spec.get('build', 1.0)
@@ -79,7 +92,7 @@ def legs(ctx, spec, g, pose, t):
     for sd in (-1, 1):
         ph = math.sin(t*7.5 + (0 if sd < 0 else math.pi))*walk
         x0 = sd*hh*0.30; xk = x0 + ph*hh*0.25; xa = x0 + ph*hh*0.45
-        if kind == 'saree':
+        if kind in ('saree', 'mundu'):
             shoe(ctx, spec, x0, 0, hh, pose.get('face', 1), sd); continue
         col = spec['bot_col']
         wt, wa = hh*0.40, hh*(0.20 if kind == 'churidar' else 0.27)
@@ -93,6 +106,18 @@ def legs(ctx, spec, g, pose, t):
                 yy = g['ay'] - hh*0.12 - k*hh*0.07
                 ctx.move_to(xa - wa*0.6, yy); ctx.curve_to(xa, yy+hh*0.04, xa, yy+hh*0.04, xa + wa*0.6, yy); ctx.set_source_rgba(0, 0, 0, 0.12); ctx.set_line_width(2.5); ctx.stroke()
         shoe(ctx, spec, xa, 0, hh, pose.get('face', 1), sd)
+
+def mundu(ctx, spec, g, pose, t):
+    """Kerala mundu (white wrap from waist to ankles with a gold kasavu border); drawn after legs/shoes."""
+    hh = g['hh']; col = spec.get('bot_col', '#f4f1e8'); bd = spec.get('border', '#d8a83a')
+    top = g['wy'] + hh*0.15; bot = g['ay'] - hh*0.05; wt = g['hw']*1.05; wb = g['hw']*1.25
+    ctx.move_to(-wt, top); ctx.line_to(wt, top); ctx.line_to(wb, bot); ctx.line_to(-wb, bot); ctx.close_path()
+    shade(ctx, col, -wb, wb, 0.1, 0.22); ctx.fill_preserve(); outline(ctx, 2.2, 0.35)
+    ctx.rectangle(-wb, bot - hh*0.12, 2*wb, hh*0.12); ctx.set_source_rgba(*hexc(bd)); ctx.fill()
+    f = pose.get('face', 1)
+    ctx.move_to(f*wt*0.2, top + hh*0.1); ctx.line_to(f*wb*0.35, bot); ctx.set_source_rgba(0, 0, 0, 0.13); ctx.set_line_width(3); ctx.stroke()
+    ctx.rectangle(f*wb*0.35 - hh*0.03, top + hh*0.3, hh*0.06, bot - top - hh*0.3); ctx.set_source_rgba(*hexc(bd, 0.8)); ctx.fill()
+    ctx.rectangle(-wt, top - hh*0.06, 2*wt, hh*0.12); ctx.set_source_rgba(*hexc(dk(col, 0.12))); ctx.fill()
 
 def shoe(ctx, spec, x, y, hh, f, sd):
     k = spec['shoe']; L = hh*0.62; Hh = hh*0.22
@@ -499,6 +524,7 @@ def human(ctx, x, y, s, spec, pose=None, t=0.0, shadow=True):
     legs(ctx, spec, g, pose, t)
     ctx.save(); ctx.translate(0, g['hy']*(1 - breathe));
     torso(ctx, spec, g, pose, t)
+    if spec['bottom'] == 'mundu': mundu(ctx, spec, g, pose, t)
     arm(ctx, spec, g, -1, al, pose, t)
     arm(ctx, spec, g, 1, ar, pose, t)
     ctx.save(); ctx.translate(0, hh*0.02*math.sin(t*1.7 + x*0.02)); ctx.rotate(pose.get('tilt', 0.0))

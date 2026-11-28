@@ -60,3 +60,14 @@ Engine for the Kunjikadhakal mystery/riddle Shorts and long videos.
 
 ## Theatre whodunit (9:16, added 27 Nov 2026, Kandupidi run C)
 - `pz/case_theatre.py`: "ONLY 1 IS LYING" variant (`n_true=2`; rule beats take `truth_label`/`lies_label`, summary takes `rule_label`). New wd.py `flat()` location 'theatre' (Star Cinemas single-screen hall at night: marquee bulbs, NIGHT SHOW poster, ticket counter, red projection-room window). End card no longer names a channel ("Follow for more mysteries!"). ANSWER: Jithin.
+
+## Two-noses TRY IT Short (9:16, added 28 Nov 2026, Kandupidi run A)
+- `tryit/nose_short.py`: Aristotle's illusion (cross middle over index, eyes closed, rub the nose tip: feels like two noses). New front-view hand `vhand()` (fingers up, crossing 0-1, glowing OUTER sides), `hand_at_nose()`, face close-up `face()` (kid at 2.2x, ghost noses). tryit_short.kid() now takes `nose=True` and mood 'closed' (eyes shut). Reuses ring_short countdown/table. Female voice ≈ 235 Hz. `python3 nose_short.py stills|render`.
+
+## Hard Malayalam Riddles long video (16:9, added 28 Nov 2026) — `riddles/`
+- `rbgs.py`: cached 2x backgrounds: studio (Arjun's office, chalkboard), Palakkad coconut market, Kottayam church clock tower (evening), Alappuzha backwater, Ammini Bakery (Kozhikode), paddy fields + 2 parallel tracks with STATION A/B, Jose Jewellery (Thrissur) + card backgrounds.
+- `rv.py`: renderer (same shot system as detective/ep.py: ~2 s sub-shots, Ken Burns, cross-dissolves, RIDDLE n/6 badge, big RIDDLE n intro, question card + yellow timer bar + PAUSE pill, green ANS box). Props: clock_face (with angle arc), boat, dog, hen, rice sack, laddoo jar, digital scale, train, parrot, gold coin, brass balance. Answer cards per riddle + 'why people get it wrong' red cards + score/subscribe end.
+- `script.py`: beats for #1 (coconut profit 30; clock 3:15 = 7.5°; dog/hen/rice boat 7 trips; heavy laddoo jar = jar 4 via 1..5 laddoos; trains 150 km at 40/35 + parrot 60 = 120 km; 9 coins 1 lighter = 2 weighings). `verify.py` checks every answer (BFS/brute force).
+- `chars.py` (detective/) gained bottom='mundu' (white kasavu mundu) and guest specs RAJU, KUTTAN, AMMINI, JOSE. ARJUN/MEENU unchanged.
+- For #N: write a new script.py (6 riddles, ~8:00-8:30; keep speech ~420 s + 6×7 s timers), add any new scenes in rv.py `shot()`, update verify.py. `python3 rv.py stills|audio|video i n|final n`; `thumb.py` makes the black-bar thumbnail.
+- Voice note: Malayalam TTS ~2.3 words/s; the first draft of #1 was 10:12 and had to be cut to 8:14 — write tight lines.

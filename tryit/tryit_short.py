@@ -104,7 +104,8 @@ def arm(ctx, side, a, glow=0.0):
     ctx.set_source(g); ctx.arc(hx, hy, 38, 0, 2*math.pi); ctx.fill()
     return hx, hy
 
-def kid(ctx, x, y, s, t, aR=0.0, aL=0.0, mood='smile', talk=0.0, glowR=0.0, push=0.0, bob=True):
+def kid(ctx, x, y, s, t, aR=0.0, aL=0.0, mood='smile', talk=0.0, glowR=0.0, push=0.0, bob=True, nose=False):
+    """mood: smile/effort/wow/closed (eyes shut, calm smile). nose=True draws a soft shaded nose."""
     ctx.save(); ctx.translate(x, y); ctx.scale(s, s)
     br = 4*math.sin(t*2.2) if bob else 0
     # shadow
@@ -142,6 +143,13 @@ def kid(ctx, x, y, s, t, aR=0.0, aL=0.0, mood='smile', talk=0.0, glowR=0.0, push
             ctx.set_source_rgba(*hexc('#2b1a12')); ctx.set_line_width(9); ctx.move_to(ex - 30, ey - 5); ctx.line_to(ex + 30, ey + 5 if ex < 0 else ey - 5); ctx.stroke()
             ctx.move_to(ex - 26, ey + 8); ctx.curve_to(ex - 10, ey + 20, ex + 10, ey + 20, ex + 26, ey + 8); ctx.stroke()
             continue
+        if mood == 'closed':
+            ctx.set_source_rgba(*hexc('#2b1a12')); ctx.set_line_width(9); ctx.set_line_cap(cairo.LINE_CAP_ROUND)
+            ctx.move_to(ex - 30, ey); ctx.curve_to(ex - 12, ey + 22, ex + 12, ey + 22, ex + 30, ey); ctx.stroke()
+            for k in (-18, 0, 18):
+                ctx.move_to(ex + k, ey + 15); ctx.line_to(ex + k*1.3, ey + 30); ctx.stroke()
+            ctx.set_source_rgba(*hexc('#3a2216')); ctx.move_to(ex - 30, ey - 48); ctx.curve_to(ex - 10, ey - 58, ex + 10, ey - 58, ex + 30, ey - 48); ctx.stroke()
+            continue
         big = 1.25 if mood == 'wow' else 1.0
         ctx.save(); ctx.translate(ex, ey); ctx.scale(big, big)
         ctx.save(); ctx.scale(1, 1.15); ctx.arc(0, 0, 30, 0, 2*math.pi); ctx.restore(); ctx.set_source_rgba(1, 1, 1, 1); ctx.fill()
@@ -154,7 +162,16 @@ def kid(ctx, x, y, s, t, aR=0.0, aL=0.0, mood='smile', talk=0.0, glowR=0.0, push
     for ex in (-100, 100):
         g = cairo.RadialGradient(ex, ey + 55, 2, ex, ey + 55, 36); g.add_color_stop_rgba(0, 1, 0.45, 0.45, 0.55); g.add_color_stop_rgba(1, 1, 0.45, 0.45, 0)
         ctx.set_source(g); ctx.arc(ex, ey + 55, 36, 0, 2*math.pi); ctx.fill()
+    if nose:
+        ny = hy + 50
+        g = cairo.RadialGradient(-6, ny - 8, 2, 0, ny, 34); g.add_color_stop_rgba(0, *hexc('#ffd9bb')); g.add_color_stop_rgba(1, *hexc('#e09a6c'))
+        ctx.set_source(g); ctx.save(); ctx.translate(0, ny); ctx.scale(1.0, 0.82); ctx.arc(0, 0, 30, 0, 2*math.pi); ctx.restore(); ctx.fill()
+        ctx.set_source_rgba(*hexc('#b8704a')); ctx.set_line_width(5); ctx.set_line_cap(cairo.LINE_CAP_ROUND)
+        for sd in (-1, 1):
+            ctx.move_to(sd*24, ny + 6); ctx.curve_to(sd*30, ny + 16, sd*18, ny + 22, sd*10, ny + 18); ctx.stroke()
+        ctx.arc(-9, ny - 10, 7, 0, 2*math.pi); ctx.set_source_rgba(1, 1, 1, 0.55); ctx.fill()
     my = hy + 85
+    if mood == 'closed': mood = 'smile'
     if mood == 'wow':
         ctx.save(); ctx.translate(0, my + 8); ctx.scale(1, 1.25); ctx.arc(0, 0, 26, 0, 2*math.pi); ctx.restore(); ctx.set_source_rgba(*hexc('#7a2a2a')); ctx.fill()
     elif mood == 'effort':

@@ -74,3 +74,6 @@ Engine for the Kunjikadhakal mystery/riddle Shorts and long videos.
 
 ## Boat-race whodunit (9:16, added 28 Nov 2026, Kandupidi run B)
 - `pz/case_boatrace.py`: 1 TRUTH case. New wd.py `flat()` location 'boatrace' (backwater at night, BOAT CLUB shed with red window, festoon flags, long chundan vallam with tall stern, upright paddles). ANSWER: Remya.
+
+## Hat logic riddle (9:16, added 28 Nov 2026, Kandupidi run C)
+- `pz/riddle_hats.py` (+ `hats_verify.py` brute-force check): 3 prisoners in a line facing a wall, 5 hats (3 white/2 black), "I don't know" x2 then "I KNOW!" (ANSWER: white, never shown). Reuses riddle_bridge.py art (sky, wall, led, prisoner, paper, dashed_arrow, thought). New: `hat()` top hat on a suspect() head (hidden '?' / W / B), `wall_slab()` vertical WALL, hat table, SEES 2/1/0 eye-line arrows, spotlight answer beats, LED 10:00 clock counting down through the whole Short, end card "Type ANSWER in the comments!" + Follow (no channel name). `python3 riddle_hats.py stills|render`.

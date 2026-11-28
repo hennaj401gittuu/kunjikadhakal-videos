@@ -71,3 +71,6 @@ Engine for the Kunjikadhakal mystery/riddle Shorts and long videos.
 - `chars.py` (detective/) gained bottom='mundu' (white kasavu mundu) and guest specs RAJU, KUTTAN, AMMINI, JOSE. ARJUN/MEENU unchanged.
 - For #N: write a new script.py (6 riddles, ~8:00-8:30; keep speech ~420 s + 6×7 s timers), add any new scenes in rv.py `shot()`, update verify.py. `python3 rv.py stills|audio|video i n|final n`; `thumb.py` makes the black-bar thumbnail.
 - Voice note: Malayalam TTS ~2.3 words/s; the first draft of #1 was 10:12 and had to be cut to 8:14 — write tight lines.
+
+## Boat-race whodunit (9:16, added 28 Nov 2026, Kandupidi run B)
+- `pz/case_boatrace.py`: 1 TRUTH case. New wd.py `flat()` location 'boatrace' (backwater at night, BOAT CLUB shed with red window, festoon flags, long chundan vallam with tall stern, upright paddles). ANSWER: Remya.

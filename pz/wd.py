@@ -433,6 +433,62 @@ def flat(ctx, t, s):
         # doors
         rrect(ctx, 430, top+620, 220, 110, 6); fill_stroke(ctx, '#3a2418', 6)
         ctx.move_to(540, top+620); ctx.line_to(540, top+730); ctx.set_source_rgba(0, 0, 0, 0.6); ctx.set_line_width(5); ctx.stroke()
+    if scene == 'boatrace':
+        # backwater at night before the snake-boat race: boathouse shed with a red window, a long chundan vallam, festoon flags
+        ctx.set_source_rgba(*hexc('#08101e')); ctx.rectangle(0, 1180, W, 40); ctx.fill()
+        for px in (60, 330, 1010):
+            ctx.move_to(px, 1190); ctx.curve_to(px+10, 1050, px+30, 980, px+40, 900); ctx.set_line_width(14); ctx.stroke()
+            for kk in range(6):
+                a = -math.pi/2 + (kk-2.5)*0.6 + 0.04*math.sin(t*2+kk); ctx.move_to(px+40, 900); ctx.line_to(px+40+math.cos(a)*110, 900+math.sin(a)*110+40); ctx.set_line_width(12); ctx.stroke()
+        # boathouse shed (right)
+        sx0, sx1, st = 520, 960, 860
+        ctx.rectangle(sx0, st, sx1-sx0, 1200-st); fill_stroke(ctx, '#6b4a2e', 6)
+        ctx.move_to(sx0-40, st); ctx.line_to((sx0+sx1)/2, st-150); ctx.line_to(sx1+40, st); ctx.close_path(); fill_stroke(ctx, '#3a3f4a', 6)
+        ctx.set_source_rgba(0, 0, 0, 0.25); ctx.set_line_width(4)
+        for k in range(1, 9): ctx.move_to(sx0 + k*49, st); ctx.line_to(sx0 + k*49, 1200); ctx.stroke()
+        rrect(ctx, sx0+30, st+30, sx1-sx0-60, 90, 12); fill_stroke(ctx, '#1d2a5a', 5)
+        text(ctx, 'BOAT CLUB', (sx0+sx1)/2, st+95, 56, '#ffd23f')
+        a = 0.75 + 0.25*math.sin(t*6)
+        rrect(ctx, sx0+40, st+160, 110, 80, 8); ctx.set_source_rgba(*hexc('#ff2a2a', a)); ctx.fill()
+        rg = cairo.RadialGradient(sx0+95, st+200, 10, sx0+95, st+200, 280); rg.add_color_stop_rgba(0, 1, 0.1, 0.1, 0.45*a); rg.add_color_stop_rgba(1, 1, 0, 0, 0)
+        ctx.set_source(rg); ctx.paint()
+        rrect(ctx, sx1-150, st+160, 110, 80, 8); ctx.set_source_rgba(*hexc('#ffb84a')); ctx.fill()
+        rrect(ctx, sx0+175, st+170, 90, 170, 6); fill_stroke(ctx, '#2a1a10', 5)
+        # festoon flags across the top
+        for k in range(16):
+            u = k/15; x = 40 + u*1000; y = 760 + 60*math.sin(u*math.pi)
+            cols = ('#e8283c', '#ffd23f', '#27a85a', '#2f6fd6')
+            ctx.move_to(x-22, y); ctx.line_to(x+22, y); ctx.line_to(x, y+40 + 4*math.sin(t*4+k)); ctx.close_path()
+            ctx.set_source_rgba(*hexc(cols[k % 4])); ctx.fill()
+        ctx.move_to(40, 760)
+        for k in range(61): u = k/60; ctx.line_to(40 + u*1000, 760 + 60*math.sin(u*math.pi))
+        ctx.set_source_rgba(1, 1, 1, 0.5); ctx.set_line_width(3); ctx.stroke()
+        # water
+        ctx.rectangle(0, 1220, W, H); ctx.set_source_rgba(*hexc('#0d1838')); ctx.fill()
+        for k in range(14):
+            yy = 1260 + k*45; xx = (k*97 + t*30) % W
+            ctx.set_source_rgba(0.6, 0.7, 1, 0.18); ctx.rectangle(xx, yy, 140, 4); ctx.fill()
+        # snake boat: very long low hull, tall curved stern rising on the left
+        by = 1310 + 5*math.sin(t*1.4); ox = 120
+        ctx.move_to(ox+40, by-10); ctx.line_to(900, by-10); ctx.curve_to(980, by-12, 1040, by-30, 1090, by-40)
+        ctx.line_to(1090, by+10); ctx.curve_to(900, by+40, ox+300, by+40, ox+150, by+30)
+        ctx.curve_to(ox+90, by+20, ox+60, by-40, ox+40, by-120); ctx.curve_to(ox+20, by-200, ox+10, by-300, ox+30, by-360)
+        ctx.curve_to(ox+70, by-330, ox+80, by-200, ox+110, by-60); ctx.curve_to(ox+120, by-30, ox+80, by-12, ox+40, by-10); ctx.close_path()
+        hg = cairo.LinearGradient(0, by-360, 0, by+40); hg.add_color_stop_rgba(0, *hexc('#8a5a30')); hg.add_color_stop_rgba(1, *hexc('#4a2c16'))
+        ctx.set_source(hg); ctx.fill_preserve(); ctx.set_source_rgba(*hexc('#1a0f08')); ctx.set_line_width(6); ctx.stroke()
+        ctx.set_source_rgba(*hexc('#ffd23f')); ctx.set_line_width(6)
+        ctx.move_to(ox+110, by+2); ctx.line_to(1080, by+2); ctx.stroke()
+        ctx.move_to(ox+44, by-340); ctx.curve_to(ox+40, by-250, ox+60, by-120, ox+100, by-30); ctx.set_line_width(4); ctx.stroke()
+        # rowers' paddles resting upright inside the hull
+        ctx.set_source_rgba(*hexc('#c79a55')); ctx.set_line_width(5)
+        for k in range(14):
+            x = ox+180 + k*54
+            ctx.move_to(x, by-10); ctx.line_to(x-8, by-70); ctx.stroke()
+            ctx.save(); ctx.translate(x-10, by-82); ctx.scale(1, 2.2); ctx.arc(0, 0, 8, 0, 2*math.pi); ctx.restore(); ctx.fill()
+        # flag on the stern
+        ctx.move_to(ox+32, by-360); ctx.line_to(ox+32, by-440); ctx.set_source_rgba(1, 1, 1, 0.8); ctx.set_line_width(4); ctx.stroke()
+        ctx.move_to(ox+32, by-440); ctx.line_to(ox+92, by-425 + 6*math.sin(t*5)); ctx.line_to(ox+32, by-405); ctx.close_path()
+        ctx.set_source_rgba(*hexc('#e8283c')); ctx.fill()
     tape(ctx, 1640, -0.04, t)
 
 def lineup(ctx, t, s, sus, beat_t0):
